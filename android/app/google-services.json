@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "897369157103",
+    "project_id": "nutritionbot-93fa2",
+    "storage_bucket": "nutritionbot-93fa2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:897369157103:android:d67cc75f2f2b555efa9a1a",
+        "android_client_info": {
+          "package_name": "com.example.pizza_ordering_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvySFYTz2hEZ2FzbUx_XqUi-qWKMulC2s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
