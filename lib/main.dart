@@ -31,10 +31,28 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) => const MaterialApp(
-    home: Directionality(
-      textDirection: TextDirection.ltr,
-      child: const ChatPage(),
+  Widget build(BuildContext context) => MaterialApp(
+    home: DefaultTabController(
+      length: 4,child: Scaffold(
+      appBar: AppBar(
+        title: const Text("Like a Nutritionist AI"),
+        bottom: const TabBar(
+          tabs: [
+            Tab(text: "Chat"),
+            Tab(text: "Notes"),
+            Tab(text: "Log Food"),
+            Tab(text: "Learn Quiz"),
+          ],),
+      ),
+      body: const TabBarView(
+        children: [
+          ChatPage(), // Replace with your actual chat page content
+          Center(child: Text("Status")),
+          Center(child: Text("Log Food")),
+          Center(child: Text("Quiz")),
+        ],
+      ),
+    ),
     ),
   );
 }
@@ -265,10 +283,11 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _loadMessages() async {
-    final response = await rootBundle.loadString('assets/messages.json');
-    final messages = (jsonDecode(response) as List)
-        .map((e) => types.Message.fromJson(e as Map<String, dynamic>))
-        .toList();
+    // final response = await rootBundle.loadString('assets/messages.json');
+    List<types.Message> messages = [];
+    // final messages = (jsonDecode(response) as List)
+    //     .map((e) => types.Message.fromJson(e as Map<String, dynamic>))
+    //     .toList();
 
     setState(() {
       _messages = messages;
