@@ -12,10 +12,12 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:mime/mime.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pizza_ordering_app/prompt.dart';
 import 'package:uuid/uuid.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_vertexai/firebase_vertexai.dart';
+import './prompt.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,18 +34,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) => const MaterialApp(
     home: Directionality(
       textDirection: TextDirection.ltr,
-      child: ChatPage(),
+      child: const ChatPage(),
     ),
   );
 }
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
-
   @override
   State<ChatPage> createState() => _ChatPageState();
 }
-
 class _ChatPageState extends State<ChatPage> {
   List<types.Message> _messages = [];
   final _user = const types.User(
@@ -54,6 +54,7 @@ class _ChatPageState extends State<ChatPage> {
     firstName: 'Gemini',
     lastName: 'AI',
   );
+  var _nutritionistPrompt = NutritionistPrompt();
 
   @override
   void initState() {
@@ -72,7 +73,7 @@ class _ChatPageState extends State<ChatPage> {
 
   Future<void> _generateAIResponse(types.Message userMessage) async {
     final model = FirebaseVertexAI.instance.generativeModel(model: 'gemini-1.5-flash');
-    final prompt = [Content.text((userMessage as types.TextMessage).text)];
+    final prompt = [Content.text(_nutritionistPrompt.generatePrompt((userMessage as types.TextMessage).text))];
 
     try {
       final response = await model.generateContent(prompt);
