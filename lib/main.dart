@@ -16,13 +16,12 @@ import 'package:uuid/uuid.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_vertexai/firebase_vertexai.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 Future<void> main() async {
-
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // );
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   initializeDateFormatting().then((_) => runApp(const MyApp()));
 }
 
@@ -46,29 +45,14 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  List<types.Message> _messages = [types.TextMessage(
-    author: types.User(id: 'user123', firstName: 'John', lastName: 'Doe'),
-    createdAt: DateTime.now().millisecondsSinceEpoch,
-    id: 'msg001',
-    metadata: {'importance': 'high'},
-    remoteId: 'remote001',
-    roomId: 'room123',
-    showStatus: true,
-    status: types.Status.sent,
-    text: 'Hello, this is a sample message',
-  ), types.TextMessage(
-    author: types.User(id: 'user123', firstName: 'John', lastName: 'Doe'),
-    createdAt: DateTime.now().millisecondsSinceEpoch,
-    id: 'msg001',
-    metadata: {'importance': 'high'},
-    remoteId: 'remote001',
-    roomId: 'room123',
-    showStatus: true,
-    status: types.Status.sent,
-    text: 'Hello, this is a sample message',
-  )];
+  List<types.Message> _messages = [];
   final _user = const types.User(
     id: '82091008-a484-4a89-ae75-a22bf8d6f3ac',
+  );
+  final _aiUser = const types.User(
+    id: 'gemini-ai',
+    firstName: 'Gemini',
+    lastName: 'AI',
   );
 
   @override
@@ -81,29 +65,43 @@ class _ChatPageState extends State<ChatPage> {
     setState(() {
       _messages.insert(0, message);
     });
-    _generateAIResponse(message);
+    if (message.author.id == _user.id) {
+      _generateAIResponse(message);
+    }
   }
 
-  Future<void> _generateAIResponse(message) async {
-    final model =
-    FirebaseVertexAI.instance.generativeModel(model: 'gemini-1.5-flash');
-    // Provide a prompt that contains text
-    final prompt = [Content.text('Write a story about a magic backpack.')];
-    // To generate text output, call generateContent with the text input
-    final response = await model.generateContent(prompt);
-    String? res = response.text;
-    print(res);
-    _addMessage(types.TextMessage(
-      author: types.User(id: 'user123', firstName: 'Gemini', lastName: 'AI'),
-      createdAt: DateTime.now().millisecondsSinceEpoch,
-      id: 'msg001',
-      metadata: {'importance': 'high'},
-      remoteId: 'remote001',
-      roomId: 'room123',
-      showStatus: true,
-      status: types.Status.sent,
-      text: res!
-    ));
+  Future<void> _generateAIResponse(types.Message userMessage) async {
+    final model = FirebaseVertexAI.instance.generativeModel(model: 'gemini-1.5-flash');
+    final prompt = [Content.text((userMessage as types.TextMessage).text)];
+
+    try {
+      final response = await model.generateContent(prompt);
+      String? aiResponse = response.text;
+
+      if (aiResponse != null && aiResponse.isNotEmpty) {
+        _addMessage(types.TextMessage(
+          author: _aiUser,
+          createdAt: DateTime.now().millisecondsSinceEpoch,
+          id: const Uuid().v4(),
+          text: aiResponse,
+        ));
+      } else {
+        _addMessage(types.TextMessage(
+          author: _aiUser,
+          createdAt: DateTime.now().millisecondsSinceEpoch,
+          id: const Uuid().v4(),
+          text: "I'm sorry, I couldn't generate a response. Please try again.",
+        ));
+      }
+    } catch (e) {
+      print('Error generating AI response: $e');
+      _addMessage(types.TextMessage(
+        author: _aiUser,
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+        id: const Uuid().v4(),
+        text: "An error occurred while generating a response. Please try again later.",
+      ));
+    }
   }
 
   void _handleAttachmentPressed() {
