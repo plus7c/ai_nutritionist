@@ -4,6 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pizza_ordering_app/auth/signup.dart';
 import 'package:pizza_ordering_app/onboarding/userstatsonboarding.dart';
 
+import '../apptemplate/apptemplate.dart';
 import '../firestore_helper.dart';
 import '../home/profile.dart';
 
@@ -77,7 +78,7 @@ class SignInConfirmationPage extends StatelessWidget {
                           // Navigate to the main app or next page
                           var userData = await _firestoreService.getUserData(user.uid);
                           if (userData != null) {
-                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeProfile()));
+                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AppTemplate()));
                           } else {
                             Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => UserStatsOnboarding()));
                           }
