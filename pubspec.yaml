@@ -53,6 +53,7 @@ dependencies:
   dash_chat_2: ^0.0.20
   flutter_speed_dial: ^7.0.0
   cloud_firestore: ^5.1.0
+  fluttermoji: ^1.0.2
 
 
 dev_dependencies:

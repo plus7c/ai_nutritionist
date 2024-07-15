@@ -4,9 +4,13 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pizza_ordering_app/auth/signup.dart';
 import 'package:pizza_ordering_app/onboarding/userstatsonboarding.dart';
 
-class SignInConfirmationPage extends StatelessWidget {
-  const SignInConfirmationPage({Key? key}) : super(key: key);
+import '../firestore_helper.dart';
+import '../home/profile.dart';
 
+class SignInConfirmationPage extends StatelessWidget {
+  SignInConfirmationPage({Key? key}) : super(key: key);
+  final FirestoreService _firestoreService = FirestoreService();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   Future<void> _signOut(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
@@ -19,6 +23,10 @@ class SignInConfirmationPage extends StatelessWidget {
         SnackBar(content: Text('Error signing out. Please try again.')),
       );
     }
+  }
+
+  void checkIfUserStatsArePopulated(){
+
   }
 
   @override
@@ -65,9 +73,14 @@ class SignInConfirmationPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           // Navigate to the main app or next page
-                          Navigator.of(context).pushReplacementNamed('/home'); // Replace with your home route
+                          var userData = await _firestoreService.getUserData(user.uid);
+                          if (userData != null) {
+                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeProfile()));
+                          } else {
+                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => UserStatsOnboarding()));
+                          }
                         },
                         child: Text('Continue'),
                       ),

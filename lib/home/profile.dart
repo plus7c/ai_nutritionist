@@ -4,6 +4,7 @@ import 'package:pizza_ordering_app/home/profilestat.dart';
 import 'package:pizza_ordering_app/firestore_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:fluttermoji/fluttermoji.dart';
 
 class HomeProfile extends StatefulWidget {
   @override
@@ -126,16 +127,17 @@ class _HomeProfileState extends State<HomeProfile> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundImage: NetworkImage('https://example.com/placeholder.jpg'),
+                child:
+                FluttermojiCircleAvatar(
+                  backgroundColor: Colors.grey[200],
+                  radius: 30,
                 ),
               ),
               SizedBox(height: 16),
               Center(
                 child: Text(
                   name.isNotEmpty ? name : 'Set your name',
-                  style: Theme.of(context).textTheme.headline5,
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ),
 

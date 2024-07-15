@@ -4,7 +4,6 @@ import 'package:pizza_ordering_app/auth/signinconfirmation.dart';
 import 'package:pizza_ordering_app/auth/signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../chatpage/chatpage.dart';
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
 
