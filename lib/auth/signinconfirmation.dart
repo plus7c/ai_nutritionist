@@ -14,7 +14,7 @@ class SignInConfirmationPage extends StatelessWidget {
   Future<void> _signOut(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
-
+      await GoogleSignIn().signOut();
       // Navigate to login page or initial page after sign out
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginScreen())); // Replace with your login route
     } catch (e) {

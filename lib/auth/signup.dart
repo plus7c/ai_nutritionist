@@ -52,8 +52,8 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
+        child: Center(
+          child:
             ElevatedButton(
               onPressed: () async {
                 User? user = await _signInWithGoogle();
@@ -67,44 +67,44 @@ class _LoginScreenState extends State<LoginScreen> {
               },
               child: Text('Sign in with Google'),
             ),
-            TextField(
-              decoration: InputDecoration(labelText: 'Email'),
-              keyboardType: TextInputType.emailAddress,
-              onChanged: (value) {
-                // Save email input
-              },
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-              onChanged: (value) {
-                // Save password input
-              },
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                // Call _signInWithEmail with the saved email and password
+            // TextField(
+            //   decoration: InputDecoration(labelText: 'Email'),
+            //   keyboardType: TextInputType.emailAddress,
+            //   onChanged: (value) {
+            //     // Save email input
+            //   },
+            // ),
+            // TextField(
+            //   decoration: InputDecoration(labelText: 'Password'),
+            //   obscureText: true,
+            //   onChanged: (value) {
+            //     // Save password input
+            //   },
+            // ),
+            // ElevatedButton(
+            //   onPressed: () async {
+            //     // Call _signInWithEmail with the saved email and password
+            //
+            //     User? user = await _signInWithEmail('email', 'password');
+            //     if (user != null) {
+            //       //check whether user is new or existing
+            //       var storeduserId = _firestoreService.getUserData(user.uid);
+            //       if (storeduserId == null)
+            //       {
+            //         Navigator.pushReplacement(
+            //           context,
+            //           MaterialPageRoute(builder: (context) => UserStatsOnboarding()),
+            //         );
+            //       }
+            //       Navigator.pushReplacement(
+            //         context,
+            //         MaterialPageRoute(builder: (context) => ChatPage()),
+            //       );
+            //     }
+            //   },
+            //   child: Text('Sign in with Email'),
+            // ),
 
-                User? user = await _signInWithEmail('email', 'password');
-                if (user != null) {
-                  //check whether user is new or existing
-                  var storeduserId = _firestoreService.getUserData(user.uid);
-                  if (storeduserId == null)
-                  {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => UserStatsOnboarding()),
-                    );
-                  }
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => ChatPage()),
-                  );
-                }
-              },
-              child: Text('Sign in with Email'),
-            ),
-          ],
         ),
       ),
     );

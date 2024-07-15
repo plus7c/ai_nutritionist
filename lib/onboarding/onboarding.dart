@@ -52,7 +52,7 @@ class OnboardingScreen extends StatelessWidget {
         onSkip: () {
           // You can also override onSkip callback
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => LoginScreen()),
+            MaterialPageRoute(builder: (_) => SignInConfirmationPage()),
           );
         },
         showSkipButton: true,
