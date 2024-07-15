@@ -1,0 +1,26 @@
+[
+  {
+    "author": {
+      "id": "82091008-a484-4a89-ae75-a22bf8d6f3ac",
+      "firstName": "User",
+      "lastName": "Name"
+    },
+    "createdAt": 1678901234567,
+    "id": "message-id-1",
+    "status": "seen",
+    "text": "Hello! How can I get advice on healthy eating?",
+    "type": "text"
+  },
+  {
+    "author": {
+      "id": "nutritionist-ai",
+      "firstName": "Nutritionist",
+      "lastName": "AI"
+    },
+    "createdAt": 1678901234568,
+    "id": "message-id-2",
+    "status": "seen",
+    "text": "Hello! I'd be happy to help you with healthy eating advice. To get started, could you tell me a bit about your current diet and any specific health goals you have?",
+    "type": "text"
+  }
+]
