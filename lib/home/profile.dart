@@ -39,6 +39,7 @@ class _HomeProfileState extends State<HomeProfile> {
     'Other'
   ];
 
+  bool isLoading = true;
   @override
   void initState() {
     super.initState();
@@ -50,8 +51,14 @@ class _HomeProfileState extends State<HomeProfile> {
     if (user != null) {
       userId = user.uid;
       await _loadAllUserData();
+      setState(() {
+        isLoading = false;
+      });
     } else {
       print('No user is currently signed in');
+      setState(() {
+        isLoading = false;
+      });
       // Handle the case when no user is signed in, e.g., navigate to login page
     }
   }
@@ -120,7 +127,9 @@ class _HomeProfileState extends State<HomeProfile> {
         elevation: 0,
         foregroundColor: Colors.black,
       ),
-      body: SingleChildScrollView(
+      body: isLoading
+          ? Center(child: CircularProgressIndicator()) :
+      SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
