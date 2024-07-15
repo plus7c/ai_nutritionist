@@ -1,6 +1,6 @@
 class NutritionistPrompt {
   final List<String> conversationHistory = [];
-  final int maxHistoryLength = 10; // Adjust as needed
+  final int maxHistoryLength = 20; // Adjust as needed
 
   static const String systemPrompt = '''
 You are a helpful and knowledgeable nutritionist assistant. Your role is to provide accurate, science-based information about nutrition, diet, and healthy eating habits. You should:

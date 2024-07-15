@@ -63,6 +63,9 @@ class DefaultFirebaseOptions {
     messagingSenderId: '897369157103',
     projectId: 'nutritionbot-93fa2',
     storageBucket: 'nutritionbot-93fa2.appspot.com',
+    androidClientId: '897369157103-spk7jovn9lks2v3npfsbo6bmiahvf6sh.apps.googleusercontent.com',
+    iosClientId: '897369157103-d9m8ljus24lcph69b09h6n5s9qkrrvf3.apps.googleusercontent.com',
     iosBundleId: 'com.example.pizzaOrderingApp',
   );
+
 }

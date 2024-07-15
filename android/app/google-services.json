@@ -12,7 +12,20 @@
           "package_name": "com.example.pizza_ordering_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "897369157103-spk7jovn9lks2v3npfsbo6bmiahvf6sh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pizza_ordering_app",
+            "certificate_hash": "b2274a20c51e12bb1e48884a6175e8ec7a7c6870"
+          }
+        },
+        {
+          "client_id": "897369157103-8365qkuph44l4vjpgnklv275d15kq6pk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCvySFYTz2hEZ2FzbUx_XqUi-qWKMulC2s"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "897369157103-8365qkuph44l4vjpgnklv275d15kq6pk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "897369157103-d9m8ljus24lcph69b09h6n5s9qkrrvf3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.pizzaOrderingApp"
+              }
+            }
+          ]
         }
       }
     }
