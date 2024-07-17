@@ -1,3 +1,4 @@
+// LoggedMeal.dart
 class MealItem {
   String mealItemName;
   int calories;
@@ -16,6 +17,18 @@ class MealItem {
     required this.servingSize,
     this.servingUnit = 'g',
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'mealItemName': mealItemName,
+      'calories': calories,
+      'carbs': carbs,
+      'fats': fats,
+      'protein': protein,
+      'servingSize': servingSize,
+      'servingUnit': servingUnit,
+    };
+  }
 }
 
 class MealType {
@@ -33,6 +46,17 @@ class MealType {
         totalCarbs = mealItems.fold(0, (sum, item) => sum + item.carbs),
         totalProtein = mealItems.fold(0, (sum, item) => sum + item.protein),
         totalFats = mealItems.fold(0, (sum, item) => sum + item.fats);
+
+  Map<String, dynamic> toMap() {
+    return {
+      'mealTypeName': mealTypeName,
+      'mealItems': mealItems.map((item) => item.toMap()).toList(),
+      'totalCalories': totalCalories,
+      'totalCarbs': totalCarbs,
+      'totalProtein': totalProtein,
+      'totalFats': totalFats,
+    };
+  }
 }
 
 class LoggedMeal {
@@ -43,4 +67,11 @@ class LoggedMeal {
     required this.timeOfLogging,
     required this.mealTypes,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'timeOfLogging': timeOfLogging,
+      'mealTypes': mealTypes.map((type) => type.toMap()).toList(),
+    };
+  }
 }

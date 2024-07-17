@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'LoggedMeal.dart';
 
 class MealPage2 extends StatefulWidget {
   @override
@@ -10,6 +11,8 @@ class MealPage2 extends StatefulWidget {
 
 class _MealPage2State extends State<MealPage2> {
   DateTime _selectedDate = DateTime.now();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -18,14 +21,70 @@ class _MealPage2State extends State<MealPage2> {
       firstDate: DateTime(2010),
       lastDate: DateTime(2050),
     );
-    if (picked != null && picked != _selectedDate)
+    if (picked != null && picked != _selectedDate) {
       setState(() {
         _selectedDate = picked;
       });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Mock data for demonstration
+    List<MealType> mealTypes = [
+      MealType(
+        mealTypeName: 'Breakfast',
+        mealItems: [
+          MealItem(
+            mealItemName: 'Oatmeal',
+            calories: 150,
+            carbs: 27.0,
+            fats: 3.0,
+            protein: 5.0,
+            servingSize: 40.0,
+          ),
+          MealItem(
+            mealItemName: 'Scrambled Eggs',
+            calories: 200,
+            carbs: 2.0,
+            fats: 15.0,
+            protein: 14.0,
+            servingSize: 100.0,
+          ),
+        ],
+      ),
+      MealType(
+        mealTypeName: 'Lunch',
+        mealItems: [
+          MealItem(
+            mealItemName: 'Chicken Salad',
+            calories: 350,
+            carbs: 15.0,
+            fats: 20.0,
+            protein: 30.0,
+            servingSize: 150.0,
+          ),
+        ],
+      ),
+      MealType(
+        mealTypeName: 'Snack',
+        mealItems: [
+          MealItem(
+            mealItemName: 'Applez',
+            calories: 95,
+            carbs: 25.0,
+            fats: 0.3,
+            protein: 0.5,
+            servingSize: 182.0,
+          ),
+        ],
+      ),
+    ];
+
+    LoggedMeal loggedMeal = LoggedMeal(
+      timeOfLogging: _selectedDate,
+      mealTypes: mealTypes,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -38,7 +97,9 @@ class _MealPage2State extends State<MealPage2> {
           ),
           IconButton(
             icon: Icon(Icons.check_circle_outline, color: Colors.white),
-            onPressed: () {},
+            onPressed: () {
+              _storeLoggedMeal(loggedMeal);
+            },
           ),
         ],
         flexibleSpace: Container(
@@ -56,38 +117,73 @@ class _MealPage2State extends State<MealPage2> {
           children: [
             _buildDateTimePicker(context),
             _buildCaloriesRemaining(),
-            _buildMealSection(context, 'Breakfast', 456, ['Apple, slice', 'Chicken Breast', 'Butter, salted']),
-            _buildMealSection(context, 'Lunch', 621, ['Grilled chicken', 'Mixed greens', 'Cherry tomatoes']),
-            _buildMealSection(context, 'Snack', 150, ['Cottage cheese', 'Pineapple chunks']),
-            _buildMealSection(context, 'Dinner', 720, ['Baked salmon', 'Roasted tempeh']),
+            ...mealTypes.map((mealType) => _buildMealSection(context, mealType)),
           ],
         ),
       ),
     );
   }
 
+  Future<void> _storeLoggedMeal(LoggedMeal loggedMeal) async {
+    String userId = _auth.currentUser!.uid;
+    DateTime logDate = DateTime(loggedMeal.timeOfLogging.year, loggedMeal.timeOfLogging.month, loggedMeal.timeOfLogging.day);
+
+    // Reference to the user's logged meals collection
+    CollectionReference loggedMealsRef = _firestore.collection('users').doc(userId).collection('loggedmeals');
+
+    // Query for an existing log entry for the specific date
+    QuerySnapshot existingLogs = await loggedMealsRef
+        .where('timeOfLogging', isEqualTo: Timestamp.fromDate(logDate))
+        .get();
+
+    if (existingLogs.docs.isNotEmpty) {
+      // If an entry for the same date exists, update it
+      String docId = existingLogs.docs.first.id;
+      await loggedMealsRef.doc(docId).update(loggedMeal.toMap());
+    } else {
+      // If no entry exists for the same date, create a new one
+      await loggedMealsRef.add(loggedMeal.toMap());
+    }
+  }
+
   Widget _buildDateTimePicker(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(16),
       child: Center(
-           child: InkWell(
-            onTap: () => _selectDate(context),
-            child: Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Log Date', style: TextStyle(fontSize: 18),),
-                  SizedBox(width: 5,),
-                  Icon(Icons.calendar_today, ),
-                  SizedBox(width: 8),
-                  Text(
-                    DateFormat('MMM d, yyyy').format(_selectedDate),
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ],
-              ),
+        child: InkWell(
+          onTap: () => _selectDate(context),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Log Date',
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+                SizedBox(width: 5),
+                Icon(Icons.calendar_today, color: Colors.white),
+                SizedBox(width: 8),
+                Text(
+                  DateFormat('MMM d, yyyy').format(_selectedDate),
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ],
             ),
           ),
+        ),
       ),
     );
   }
@@ -104,19 +200,21 @@ class _MealPage2State extends State<MealPage2> {
       ),
       child: Column(
         children: [
-          SizedBox(height: 8,),
+          SizedBox(height: 8),
           Text(
             '2,640 - 621 + 0 = 2,019',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+            style: TextStyle(
+                fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
           ),
-          Text('Goal     Food   Exercise     Remaining', style: TextStyle(color: Colors.white)),
+          Text('Goal     Food   Exercise     Remaining',
+              style: TextStyle(color: Colors.white)),
           SizedBox(height: 8),
         ],
       ),
     );
   }
 
-  Widget _buildMealSection(BuildContext context, String mealType, int calories, List<String> foods) {
+  Widget _buildMealSection(BuildContext context, MealType mealType) {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 4,
@@ -128,19 +226,23 @@ class _MealPage2State extends State<MealPage2> {
         children: [
           ListTile(
             leading: Icon(Icons.restaurant, color: Colors.blue),
-            title: Text(mealType, style: TextStyle(fontWeight: FontWeight.bold)),
-            trailing: Text('$calories Cal', style: TextStyle(color: Colors.blue)),
+            title: Text(mealType.mealTypeName,
+                style: TextStyle(fontWeight: FontWeight.bold)),
+            trailing: Text('${mealType.totalCalories} Cal',
+                style: TextStyle(color: Colors.blue)),
           ),
-          ...foods.map((food) => ListTile(
-            title: Text(food),
-            trailing: Text('15 Cal', style: TextStyle(color: Colors.grey)),
+          ...mealType.mealItems.map((food) => ListTile(
+            title: Text(food.mealItemName),
+            trailing: Text('${food.calories} Cal',
+                style: TextStyle(color: Colors.grey)),
           )),
           ListTile(
             leading: Icon(Icons.add, color: Colors.blue),
             title: Text('ADD FOOD', style: TextStyle(color: Colors.blue)),
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AddFoodPage(mealType: mealType)),
+              MaterialPageRoute(
+                  builder: (context) => AddFoodPage(mealType: mealType.mealTypeName)),
             ),
           ),
         ],
@@ -192,8 +294,10 @@ class AddFoodPage extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildQuickActionButton(context, Icons.qr_code_scanner, 'Scan a Barcode'),
-                _buildQuickActionButton(context, Icons.add_circle_outline, 'Quick Add'),
+                _buildQuickActionButton(
+                    context, Icons.qr_code_scanner, 'Scan a Barcode'),
+                _buildQuickActionButton(
+                    context, Icons.add_circle_outline, 'Quick Add'),
               ],
             ),
             SizedBox(height: 16),
@@ -233,7 +337,8 @@ class AddFoodPage extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => QuickAddPage(mealType: mealType)),
+                MaterialPageRoute(
+                    builder: (context) => QuickAddPage(mealType: mealType)),
               );
             },
           ),
@@ -355,8 +460,11 @@ class _QuickAddPageState extends State<QuickAddPage> {
     String userId = _auth.currentUser!.uid;
     String calories = _caloriesController.text;
 
-    await _firestore.collection('users').doc(userId).collection('loggedmeals').add({
-      // 'logdate' : widget.,
+    await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('loggedmeals')
+        .add({
       'mealType': widget.mealType,
       'calories': int.parse(calories),
       'timestamp': Timestamp.now(),
