@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'LoggedMeal.dart';
 import 'addfoodpage.dart';
+import 'addmeallogpagewidget.dart';
 import 'quickaddpage.dart';
 
 class MealPage2 extends StatefulWidget {
@@ -32,13 +33,16 @@ class _MealPage2State extends State<MealPage2> {
 
   Future<LoggedMeal?> _fetchLoggedMeal() async {
     String userId = _auth.currentUser!.uid;
-    DateTime logDate = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day);
+
+    DateTime startOfDay = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, 0, 0, 0);
+    DateTime endOfDay = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, 23, 59, 59);
 
     QuerySnapshot querySnapshot = await _firestore
         .collection('users')
         .doc(userId)
         .collection('loggedmeals')
-        .where('timeOfLogging', isEqualTo: Timestamp.fromDate(logDate))
+        .where('timeOfLogging', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where('timeOfLogging', isLessThanOrEqualTo: Timestamp.fromDate(endOfDay))
         .get();
 
     if (querySnapshot.docs.isNotEmpty) {
@@ -48,6 +52,7 @@ class _MealPage2State extends State<MealPage2> {
       return null;
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -218,9 +223,13 @@ class _MealPage2State extends State<MealPage2> {
             title: Text('ADD FOOD', style: TextStyle(color: Colors.blue)),
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(
-                  builder: (context) => AddFoodPage(mealType: mealType.mealTypeName)),
-            ),
+              MaterialPageRoute(builder: (context) => AddMealLogPage()),
+            )
+            //     Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //       builder: (context) => AddFoodPage(mealType: mealType.mealTypeName)),
+            // ),
           ),
         ],
       ),
