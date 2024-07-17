@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pizza_ordering_app/gemini_utils.dart';
-import 'package:pizza_ordering_app/meals/meallog.dart';
 import 'package:pizza_ordering_app/meals/mealpageAndAddFoodPage.dart';
 
 import '../chatpage/chatpage.dart';

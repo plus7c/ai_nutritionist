@@ -1,4 +1,6 @@
 // LoggedMeal.dart
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class MealItem {
   String mealItemName;
   int calories;
@@ -29,10 +31,22 @@ class MealItem {
       'servingUnit': servingUnit,
     };
   }
+
+  static MealItem fromMap(Map<String, dynamic> map) {
+    return MealItem(
+      mealItemName: map['mealItemName'] ?? '',
+      calories: map['calories'] ?? 0,
+      carbs: map['carbs']?.toDouble() ?? 0.0,
+      fats: map['fats']?.toDouble() ?? 0.0,
+      protein: map['protein']?.toDouble() ?? 0.0,
+      servingSize: map['servingSize']?.toDouble() ?? 0.0,
+      servingUnit: map['servingUnit'] ?? 'g',
+    );
+  }
 }
 
 class MealType {
-  String mealTypeName; // could be breakfast, lunch, dinner, or snack
+  String mealTypeName;
   List<MealItem> mealItems;
   int totalCalories;
   double totalCarbs;
@@ -57,6 +71,16 @@ class MealType {
       'totalFats': totalFats,
     };
   }
+
+  static MealType fromMap(Map<String, dynamic> map) {
+    var items = map['mealItems'] as List;
+    List<MealItem> mealItemsList = items.map((item) => MealItem.fromMap(item)).toList();
+
+    return MealType(
+      mealTypeName: map['mealTypeName'] ?? '',
+      mealItems: mealItemsList,
+    );
+  }
 }
 
 class LoggedMeal {
@@ -73,5 +97,15 @@ class LoggedMeal {
       'timeOfLogging': timeOfLogging,
       'mealTypes': mealTypes.map((type) => type.toMap()).toList(),
     };
+  }
+
+  static LoggedMeal fromMap(Map<String, dynamic> map) {
+    var types = map['mealTypes'] as List;
+    List<MealType> mealTypesList = types.map((type) => MealType.fromMap(type)).toList();
+
+    return LoggedMeal(
+      timeOfLogging: (map['timeOfLogging'] as Timestamp).toDate(),
+      mealTypes: mealTypesList,
+    );
   }
 }

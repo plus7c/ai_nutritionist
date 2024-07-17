@@ -1,6 +1,6 @@
 import 'LoggedMeal.dart';
 
-void main() {
+void mockdata() {
   // Create some sample meal items
   MealItem oatmeal = MealItem(
     mealItemName: 'Oatmeal',
