@@ -77,10 +77,10 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
       Map<String, dynamic> existingLogData = existingLogs.docs.first.data() as Map<String, dynamic>;
       LoggedMeal existingLoggedMeal = LoggedMeal.fromMap(existingLogData);
 
-      // Check if meal type already exists and update it
+      // Check if meal type already exists and add new items to it
       int mealTypeIndex = existingLoggedMeal.mealTypes.indexWhere((mealType) => mealType.mealTypeName == newMealType.mealTypeName);
       if (mealTypeIndex != -1) {
-        existingLoggedMeal.mealTypes[mealTypeIndex] = newMealType;
+        existingLoggedMeal.mealTypes[mealTypeIndex].mealItems.addAll(newMealType.mealItems);
       } else {
         existingLoggedMeal.mealTypes.add(newMealType);
       }
@@ -100,6 +100,7 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
       _mealItems.clear();
     });
   }
+
 
 
   @override
