@@ -6,12 +6,10 @@ import 'package:pizza_ordering_app/onboarding/userstatsonboarding.dart';
 
 import '../apptemplate/apptemplate.dart';
 import '../firestore_helper.dart';
-import '../home/profile.dart';
 
 class SignInConfirmationPage extends StatelessWidget {
   SignInConfirmationPage({Key? key}) : super(key: key);
   final FirestoreService _firestoreService = FirestoreService();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   Future<void> _signOut(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();

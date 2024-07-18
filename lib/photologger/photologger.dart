@@ -18,12 +18,10 @@ class _FoodLogWidgetState extends State<FoodLogWidget> {
   final ImagePicker _picker = ImagePicker();
   List<FoodLogEntry> entries = [];
   bool _isLoading = false;
-  String _errorMessage = '';
 
   Future<void> _getImage(ImageSource source) async {
     setState(() {
       _isLoading = true;
-      _errorMessage = '';
     });
 
     try {
@@ -37,7 +35,6 @@ class _FoodLogWidgetState extends State<FoodLogWidget> {
       }
     } catch (e) {
       setState(() {
-        _errorMessage = 'Failed to pick image: $e';
       });
     } finally {
       setState(() {

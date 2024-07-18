@@ -75,3 +75,19 @@ class BMICard extends StatelessWidget {
     );
   }
 }
+
+double calculateBMI(double weightLbs, int heightInches) {
+  // Convert pounds to kilograms
+  double weightKg = weightLbs * 0.453592;
+
+  // Convert inches to meters
+  double heightMeters = heightInches * 0.0254;
+
+  // Calculate BMI
+  double bmi = weightKg / (heightMeters * heightMeters);
+
+  // Round BMI to one decimal place
+  bmi = double.parse(bmi.toStringAsFixed(1));
+
+  return bmi;
+}

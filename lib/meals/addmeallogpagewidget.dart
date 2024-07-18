@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:typed_data';
 import 'dart:convert';
+// ignore: unused_import
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:firebase_vertexai/firebase_vertexai.dart';
 import 'LoggedMeal.dart';
@@ -36,7 +37,6 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
 
   final ImagePicker _picker = ImagePicker();
   bool _isLoading = false;
-  String _errorMessage = '';
 
   void _addMealItem() {
     if (_mealItemNameController.text.isNotEmpty && _caloriesController.text.isNotEmpty) {
@@ -112,7 +112,6 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
   Future<void> _getImage(ImageSource source) async {
     setState(() {
       _isLoading = true;
-      _errorMessage = '';
     });
 
     try {
@@ -131,7 +130,6 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
       }
     } catch (e) {
       setState(() {
-        _errorMessage = 'Failed to pick image: $e';
       });
     } finally {
       setState(() {

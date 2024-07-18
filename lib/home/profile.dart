@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pizza_ordering_app/home/goalitem.dart';
-import 'package:pizza_ordering_app/home/profilestat.dart';
 import 'package:pizza_ordering_app/firestore_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';

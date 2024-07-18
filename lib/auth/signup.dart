@@ -1,10 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:pizza_ordering_app/chatpage/chatpage.dart';
 import 'package:pizza_ordering_app/onboarding/userstatsonboarding.dart';
 
-import '../firestore_helper.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -15,7 +13,6 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
-  final FirestoreService _firestoreService = FirestoreService();
 
   Future<User?> _signInWithGoogle() async {
     try {

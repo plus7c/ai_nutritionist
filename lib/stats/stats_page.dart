@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:pizza_ordering_app/stats/nutrients_section.dart';
 
 import '../firestore_helper.dart';
 import 'bmi.dart';
+import 'weightstats.dart';
 
 class StatsPage extends StatefulWidget {
   @override
@@ -39,16 +40,14 @@ class _StatsPageState extends State<StatsPage> {
     String userId = _auth.currentUser!.uid;
 
     // Fetch BMI
-    DocumentSnapshot userDoc = await _firestore.collection('users').doc(userId).get();
     var userData = await _firestoreService.getUserData(userId);
     Map<String, dynamic> heightData = userData?['height'];
     int feet = heightData['feet'];
     int inches = heightData['inches'];
+    int totalHeightInches = (feet * 12) + inches;
 
-    // Convert inches to feet and add to the feet value
-    double heightInFeet = feet + (inches / 12.0);
     setState(() {
-      _bmi = userData?['weight'] / (heightInFeet * heightInFeet);
+      _bmi = calculateBMI(userData?['weight'], totalHeightInches);
     });
 
     // Fetch daily meals
@@ -122,11 +121,7 @@ class _StatsPageState extends State<StatsPage> {
               SizedBox(height: 16),
               WeightStatistics(weightData: _weightData),
               SizedBox(height: 16),
-              NutrientsSection(
-                protein: _totalProtein,
-                fats: _totalFats,
-                carbs: _totalCarbs,
-              ),
+              NutrientsSection(protein: _totalProtein, fats: _totalFats, carbs: _totalCarbs)
             ],
           ),
         ),
@@ -212,225 +207,7 @@ class StatItem extends StatelessWidget {
   }
 }
 
-class WeightStatistics extends StatelessWidget {
-  final List<FlSpot> weightData;
-
-  const WeightStatistics({required this.weightData});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Your Weight Statistics',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
-            ),
-            SizedBox(height: 12),
-            // Weight statistics graph
-            Container(
-              height: 200,
-              child: weightData.isNotEmpty
-                  ? LineChart(
-                LineChartData(
-                  borderData: FlBorderData(show: true),
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: weightData,
-                      isCurved: true,
-                      barWidth: 4,
-                      colors: [Colors.blue],
-                      belowBarData: BarAreaData(show: false),
-                    ),
-                  ],
-                  titlesData: FlTitlesData(
-                    leftTitles: SideTitles(showTitles: true),
-                    bottomTitles: SideTitles(showTitles: true),
-                  ),
-                ),
-              )
-                  : Center(child: Text('No weight data available', style: TextStyle(fontSize: 16, color: Colors.grey))),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class NutrientsSection extends StatelessWidget {
-  final double protein;
-  final double fats;
-  final double carbs;
-
-  const NutrientsSection({
-    required this.protein,
-    required this.fats,
-    required this.carbs,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Protein, Fats, Carbohydrates',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
-            ),
-            SizedBox(height: 12),
-            // Nutrients graph
-            Container(
-              height: 200,
-              child: BarChart(
-                BarChartData(
-                  barGroups: [
-                    BarChartGroupData(
-                      x: 0,
-                      barRods: [
-                        BarChartRodData(y: protein, colors: [Colors.red]),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 1,
-                      barRods: [
-                        BarChartRodData(y: fats, colors: [Colors.green]),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 2,
-                      barRods: [
-                        BarChartRodData(y: carbs, colors: [Colors.blue]),
-                      ],
-                    ),
-                  ],
-                  titlesData: FlTitlesData(
-                    leftTitles: SideTitles(showTitles: true),
-                    bottomTitles: SideTitles(
-                      showTitles: true,
-                      getTitles: (double value) {
-                        switch (value.toInt()) {
-                          case 0:
-                            return 'Protein';
-                          case 1:
-                            return 'Fats';
-                          case 2:
-                            return 'Carbs';
-                        }
-                        return '';
-                      },
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class BMICard extends StatelessWidget {
-  final double bmi;
-
-  const BMICard({required this.bmi});
-
-  String _getBMICategory(double bmi) {
-    if (bmi < 18.5) {
-      return 'Underweight';
-    } else if (bmi >= 18.5 && bmi <= 24.9) {
-      return 'Healthy Weight';
-    } else if (bmi >= 25 && bmi <= 29.9) {
-      return 'Overweight';
-    } else {
-      return 'Obese';
-    }
-  }
-
-  Color _getBMICategoryColor(double bmi) {
-    if (bmi < 18.5) {
-      return Colors.blue;
-    } else if (bmi >= 18.5 && bmi <= 24.9) {
-      return Colors.green;
-    } else if (bmi >= 25 && bmi <= 29.9) {
-      return Colors.orange;
-    } else {
-      return Colors.red;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    String bmiCategory = _getBMICategory(bmi);
-    Color bmiCategoryColor = _getBMICategoryColor(bmi);
-
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Body Mass Index (BMI)',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
-            ),
-            SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Your BMI: ${bmi.toStringAsFixed(1)}',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: bmiCategoryColor,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    bmiCategory,
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 extension DateTimeExtension on DateTime {
   DateTime get startOfDay => DateTime(year, month, day, 0, 0, 0);
   DateTime get endOfDay => DateTime(year, month, day, 23, 59, 59);
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: StatsPage(),
-    theme: ThemeData(
-      primarySwatch: Colors.blue,
-    ),
-  ));
 }
