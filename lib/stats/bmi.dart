@@ -1,9 +1,25 @@
 import 'package:flutter/material.dart';
 
-class BMICard extends StatelessWidget {
+import '../gemini_engine/gemini_stats_section.dart';
+
+class BMICard extends StatefulWidget {
   final double bmi;
 
   const BMICard({required this.bmi});
+
+  @override
+  State<BMICard> createState() => _BMICardState();
+}
+
+class _BMICardState extends State<BMICard> {
+  bool _isLoading = false;
+  String _recommendation = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchRecommendation();
+  }
 
   String _getBMICategory(double bmi) {
     if (bmi < 18.5) {
@@ -17,7 +33,21 @@ class BMICard extends StatelessWidget {
     }
   }
 
-  Color _getBMICategoryColor(double bmi) {
+  Future<void> _fetchRecommendation() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    // Call to Gemini to get the recommendation
+    String recommendation = await getGeminiRecommendationForBMI(widget.bmi);
+
+    setState(() {
+      _recommendation = recommendation;
+      _isLoading = false;
+    });
+}
+
+    Color _getBMICategoryColor(double bmi) {
     if (bmi < 18.5) {
       return Colors.blue;
     } else if (bmi >= 18.5 && bmi <= 24.9) {
@@ -31,8 +61,8 @@ class BMICard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String bmiCategory = _getBMICategory(bmi);
-    Color bmiCategoryColor = _getBMICategoryColor(bmi);
+    String bmiCategory = _getBMICategory(widget.bmi);
+    Color bmiCategoryColor = _getBMICategoryColor(widget.bmi);
 
     return Card(
       shape: RoundedRectangleBorder(
@@ -53,7 +83,7 @@ class BMICard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Your BMI: ${bmi.toStringAsFixed(1)}',
+                  'Your BMI: ${widget.bmi.toStringAsFixed(1)}',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 Container(
@@ -66,6 +96,27 @@ class BMICard extends StatelessWidget {
                     bmiCategory,
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            _isLoading
+                ? Center(child: CircularProgressIndicator())
+                : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Gemini Recommendation',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  _recommendation,
+                  style: TextStyle(fontSize: 14, color: Colors.black),
                 ),
               ],
             ),

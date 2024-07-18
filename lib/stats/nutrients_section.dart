@@ -1,7 +1,9 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-class NutrientsSection extends StatelessWidget {
+import '../gemini_engine/gemini_stats_section.dart';
+
+class NutrientsSection extends StatefulWidget {
   final double protein;
   final double fats;
   final double carbs;
@@ -11,6 +13,36 @@ class NutrientsSection extends StatelessWidget {
     required this.fats,
     required this.carbs,
   });
+
+  @override
+  _NutrientsSectionState createState() => _NutrientsSectionState();
+}
+
+class _NutrientsSectionState extends State<NutrientsSection> {
+  String _recommendation = '';
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchRecommendation();
+  }
+
+  Future<void> _fetchRecommendation() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    // Call to Gemini to get the recommendation
+    // This is a mock function. Replace with actual API call to Gemini
+    await Future.delayed(Duration(seconds: 2));  // Mocking network delay
+    String recommendation = await getGeminiRecommendationForStats(widget.protein, widget.fats, widget.carbs);
+
+    setState(() {
+      _recommendation = recommendation;
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +57,7 @@ class NutrientsSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Nutrient Breakdown',
+              'Macro-Nutrient Breakdown',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -38,9 +70,9 @@ class NutrientsSection extends StatelessWidget {
               child: BarChart(
                 BarChartData(
                   alignment: BarChartAlignment.spaceAround,
-                  maxY: (protein > fats && protein > carbs)
-                      ? protein * 1.2
-                      : (fats > carbs ? fats * 1.2 : carbs * 1.2),
+                  maxY: (widget.protein > widget.fats && widget.protein > widget.carbs)
+                      ? widget.protein * 1.2
+                      : (widget.fats > widget.carbs ? widget.fats * 1.2 : widget.carbs * 1.2),
                   barTouchData: BarTouchData(
                     touchTooltipData: BarTouchTooltipData(
                       tooltipBgColor: Colors.blueGrey,
@@ -128,7 +160,7 @@ class NutrientsSection extends StatelessWidget {
                       x: 0,
                       barRods: [
                         BarChartRodData(
-                          y: protein,
+                          y: widget.protein,
                           colors: [Colors.red],
                           width: 20,
                         ),
@@ -138,7 +170,7 @@ class NutrientsSection extends StatelessWidget {
                       x: 1,
                       barRods: [
                         BarChartRodData(
-                          y: fats,
+                          y: widget.fats,
                           colors: [Colors.green],
                           width: 20,
                         ),
@@ -148,7 +180,7 @@ class NutrientsSection extends StatelessWidget {
                       x: 2,
                       barRods: [
                         BarChartRodData(
-                          y: carbs,
+                          y: widget.carbs,
                           colors: [Colors.blue],
                           width: 20,
                         ),
@@ -158,9 +190,71 @@ class NutrientsSection extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Legend(color: Colors.red, text: 'Protein (g)'),
+                Legend(color: Colors.green, text: 'Fats (g)'),
+                Legend(color: Colors.blue, text: 'Carbs (g)'),
+              ],
+            ),
+            SizedBox(height: 20),
+            _isLoading
+                ? Center(child: CircularProgressIndicator())
+                : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Gemini Recommendation',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  _recommendation,
+                  style: TextStyle(fontSize: 14, color: Colors.black),
+                ),
+              ],
+            ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class Legend extends StatelessWidget {
+  final Color color;
+  final String text;
+
+  const Legend({required this.color, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 16,
+          height: 16,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+        ),
+        SizedBox(width: 8),
+        Text(
+          text,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+      ],
     );
   }
 }
