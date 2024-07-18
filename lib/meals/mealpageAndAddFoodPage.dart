@@ -3,9 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'LoggedMeal.dart';
-import 'addfoodpage.dart';
 import 'addmeallogpagewidget.dart';
-import 'quickaddpage.dart';
 
 class MealPage2 extends StatefulWidget {
   @override
@@ -134,22 +132,6 @@ class _MealPage2State extends State<MealPage2> {
             'No meals logged for this date.',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 16),
-          Card(
-            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            elevation: 4,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: ListTile(
-              leading: Icon(Icons.add, color: Colors.blue),
-              title: Text('ADD FOOD', style: TextStyle(color: Colors.blue)),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddMealLogPage()),
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -248,7 +230,8 @@ class _MealPage2State extends State<MealPage2> {
                       ],
                     );
                   } else {
-                    return Text('0');
+                    return Text('Total Calories: 0 kCal', style: TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white));
                   }
                 },
               ),

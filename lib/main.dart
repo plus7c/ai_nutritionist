@@ -18,8 +18,8 @@ import 'package:pizza_ordering_app/home/profile.dart';
 import 'package:pizza_ordering_app/onboarding/onboarding.dart';
 import 'package:pizza_ordering_app/onboarding/userstatsonboarding.dart';
 import 'package:pizza_ordering_app/photologger/photologger.dart';
-import 'package:pizza_ordering_app/profile/main_profile.dart';
 import 'package:pizza_ordering_app/prompt.dart';
+import 'package:pizza_ordering_app/stats/stats_page.dart';
 import 'package:uuid/uuid.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
     HomeProfile(),
     FoodLogWidget(model: getGeminiInstance()),
     ChatPage(),
-    ProfilePage(),
+    StatsPage(),
   ];
   void _onItemTapped(int index) {
     setState(() {

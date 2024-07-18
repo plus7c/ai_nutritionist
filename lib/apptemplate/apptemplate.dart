@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pizza_ordering_app/gemini_utils.dart';
 import 'package:pizza_ordering_app/meals/mealpageAndAddFoodPage.dart';
+import 'package:pizza_ordering_app/stats/stats_page.dart';
 
 import '../chatpage/chatpage.dart';
 import '../home/profile.dart';
 import '../photologger/photologger.dart';
-import '../profile/main_profile.dart';
 
 class AppTemplate extends StatefulWidget {
   @override
@@ -18,7 +18,7 @@ class _AppTemplateState extends State<AppTemplate> {
     HomeProfile(),
     ChatPage(),
     FoodLogWidget(model: getGeminiInstance()),
-    ProfilePage(),
+    StatsPage(),
     MealPage2(), // Placeholder for the new profile page
   ];
 
