@@ -62,7 +62,7 @@ class _MealPage2State extends State<MealPage2> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(Icons.flash_on, color: Colors.white),
+            icon: Icon(Icons.flash_on,  color: Colors.white),
             onPressed: () {},
           ),
           IconButton(
@@ -87,6 +87,21 @@ class _MealPage2State extends State<MealPage2> {
           children: [
             _buildDateTimePicker(context),
             _buildCaloriesRemaining(),
+            Card(
+              margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: ListTile(
+                leading: Icon(Icons.add, color: Colors.blue),
+                title: Text('LOG FOOD', style: TextStyle(color: Colors.blue)),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddMealLogPage()),
+                ),
+              ),
+            ),
             FutureBuilder<LoggedMeal?>(
               future: _fetchLoggedMeal(),
               builder: (context, snapshot) {
@@ -100,12 +115,42 @@ class _MealPage2State extends State<MealPage2> {
                         .toList(),
                   );
                 } else {
-                  return Text('No meals logged for this date.');
+                  return _buildNoMealsLogged(context);
                 }
               },
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildNoMealsLogged(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          Text(
+            'No meals logged for this date.',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 16),
+          Card(
+            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: ListTile(
+              leading: Icon(Icons.add, color: Colors.blue),
+              title: Text('ADD FOOD', style: TextStyle(color: Colors.blue)),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddMealLogPage()),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -218,19 +263,19 @@ class _MealPage2State extends State<MealPage2> {
             trailing: Text('${food.calories} Cal',
                 style: TextStyle(color: Colors.grey)),
           )),
-          ListTile(
-            leading: Icon(Icons.add, color: Colors.blue),
-            title: Text('ADD FOOD', style: TextStyle(color: Colors.blue)),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AddMealLogPage()),
-            )
-            //     Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //       builder: (context) => AddFoodPage(mealType: mealType.mealTypeName)),
-            // ),
-          ),
+          // ListTile(
+          //   leading: Icon(Icons.add, color: Colors.blue),
+          //   title: Text('ADD FOOD', style: TextStyle(color: Colors.blue)),
+          //   onTap: () => Navigator.push(
+          //     context,
+          //     MaterialPageRoute(builder: (context) => AddMealLogPage()),
+          //   )
+          //   //     Navigator.push(
+          //   //   context,
+          //   //   MaterialPageRoute(
+          //   //       builder: (context) => AddFoodPage(mealType: mealType.mealTypeName)),
+          //   // ),
+          // ),
         ],
       ),
     );

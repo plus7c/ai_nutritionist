@@ -15,7 +15,7 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   DateTime _selectedDate = DateTime.now();
-  String _mealTypeName = '';
+  String _mealTypeName = 'Breakfast';
   final List<MealItem> _mealItems = [];
 
   final TextEditingController _mealItemNameController = TextEditingController();
@@ -26,20 +26,15 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
   final TextEditingController _servingSizeController = TextEditingController();
 
   void _addMealItem() {
-    if (_mealItemNameController.text.isNotEmpty &&
-        _caloriesController.text.isNotEmpty &&
-        _carbsController.text.isNotEmpty &&
-        _fatsController.text.isNotEmpty &&
-        _proteinController.text.isNotEmpty &&
-        _servingSizeController.text.isNotEmpty) {
+    if (_mealItemNameController.text.isNotEmpty && _caloriesController.text.isNotEmpty) {
       setState(() {
         _mealItems.add(MealItem(
           mealItemName: _mealItemNameController.text,
           calories: int.parse(_caloriesController.text),
-          carbs: double.parse(_carbsController.text),
-          fats: double.parse(_fatsController.text),
-          protein: double.parse(_proteinController.text),
-          servingSize: double.parse(_servingSizeController.text),
+          carbs: _carbsController.text.isNotEmpty ? double.parse(_carbsController.text) : 0.0,
+          fats: _fatsController.text.isNotEmpty ? double.parse(_fatsController.text) : 0.0,
+          protein: _proteinController.text.isNotEmpty ? double.parse(_proteinController.text) : 0.0,
+          servingSize: _servingSizeController.text.isNotEmpty ? double.parse(_servingSizeController.text) : 0.0,
         ));
         _mealItemNameController.clear();
         _caloriesController.clear();
@@ -96,12 +91,22 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
     );
 
     setState(() {
-      _mealTypeName = '';
+      _mealTypeName = 'Breakfast';
       _mealItems.clear();
     });
   }
 
-
+  void _takePhotoAndFillInfo() {
+    // Mock implementation of taking a photo and filling the information
+    setState(() {
+      _mealItemNameController.text = 'Mock Food';
+      _caloriesController.text = '200';
+      _carbsController.text = '30';
+      _fatsController.text = '10';
+      _proteinController.text = '15';
+      _servingSizeController.text = '100';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -172,14 +177,21 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
                   ),
                 ),
                 SizedBox(height: 16),
-                TextFormField(
+                DropdownButtonFormField<String>(
+                  value: _mealTypeName,
                   decoration: InputDecoration(
-                    labelText: 'Meal Type (e.g., Breakfast, Lunch, Snack, Dinner)',
+                    labelText: 'Meal Type',
                     border: OutlineInputBorder(),
                   ),
+                  items: ['Breakfast', 'Lunch', 'Dinner', 'Snack']
+                      .map((label) => DropdownMenuItem(
+                    child: Text(label),
+                    value: label,
+                  ))
+                      .toList(),
                   onChanged: (value) {
                     setState(() {
-                      _mealTypeName = value;
+                      _mealTypeName = value!;
                     });
                   },
                 ),
@@ -190,6 +202,12 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
                     labelText: 'Meal Item Name',
                     border: OutlineInputBorder(),
                   ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a meal item name';
+                    }
+                    return null;
+                  },
                 ),
                 SizedBox(height: 16),
                 TextFormField(
@@ -199,6 +217,12 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
                     border: OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter calories';
+                    }
+                    return null;
+                  },
                 ),
                 SizedBox(height: 16),
                 TextFormField(
@@ -238,6 +262,18 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
                 ),
                 SizedBox(height: 16),
                 ElevatedButton(
+                  onPressed: _takePhotoAndFillInfo,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.camera_alt),
+                      SizedBox(width: 8),
+                      Text('Take Photo'),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
                   onPressed: _addMealItem,
                   child: Text('Add Meal Item'),
                 ),
@@ -256,7 +292,11 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
                   ),
                 SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: _storeMealLog,
+                  onPressed: () {
+                    // if (_formKey.currentState!.validate()) {
+                      _storeMealLog();
+                    // }
+                  },
                   child: Text('Save Meal Log'),
                 ),
               ],
