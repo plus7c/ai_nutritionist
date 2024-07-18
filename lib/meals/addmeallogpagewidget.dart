@@ -2,9 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:typed_data';
+import 'dart:convert';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:firebase_vertexai/firebase_vertexai.dart';
 import 'LoggedMeal.dart';
 
 class AddMealLogPage extends StatefulWidget {
+  final GenerativeModel model;
+
+  const AddMealLogPage({Key? key, required this.model}) : super(key: key);
+
   @override
   _AddMealLogPageState createState() => _AddMealLogPageState();
 }
@@ -24,6 +33,10 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
   final TextEditingController _fatsController = TextEditingController();
   final TextEditingController _proteinController = TextEditingController();
   final TextEditingController _servingSizeController = TextEditingController();
+
+  final ImagePicker _picker = ImagePicker();
+  bool _isLoading = false;
+  String _errorMessage = '';
 
   void _addMealItem() {
     if (_mealItemNameController.text.isNotEmpty && _caloriesController.text.isNotEmpty) {
@@ -96,16 +109,81 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
     });
   }
 
-  void _takePhotoAndFillInfo() {
-    // Mock implementation of taking a photo and filling the information
+  Future<void> _getImage(ImageSource source) async {
     setState(() {
-      _mealItemNameController.text = 'Mock Food';
-      _caloriesController.text = '200';
-      _carbsController.text = '30';
-      _fatsController.text = '10';
-      _proteinController.text = '15';
-      _servingSizeController.text = '100';
+      _isLoading = true;
+      _errorMessage = '';
     });
+
+    try {
+      final XFile? image = await _picker.pickImage(source: source);
+      if (image != null) {
+        final bytes = await image.readAsBytes();
+        final nutritionInfo = await _generateNutritionInfo(bytes);
+        setState(() {
+          _mealItemNameController.text = nutritionInfo.name;
+          _caloriesController.text = nutritionInfo.calories.toString();
+          _carbsController.text = nutritionInfo.carbs.toString();
+          _fatsController.text = nutritionInfo.fat.toString();
+          _proteinController.text = nutritionInfo.protein.toString();
+          _servingSizeController.text = nutritionInfo.servingSize.toString();
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Failed to pick image: $e';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<NutritionInfo> _generateNutritionInfo(Uint8List imageBytes) async {
+    final prompt = '''
+  Analyze this food image and provide the following information:
+  1. Name of the dish
+  2. Estimated calorie content
+  3. Macronutrients (protein, carbs, fat) in grams
+  4. List of main ingredients
+  5. Any potential allergens
+
+  Format the response as a JSON object with the following structure:
+  {
+    "name": "Dish name",
+    "calories": 000,
+    "protein": 00,
+    "carbs": 00,
+    "fat": 00,
+    "ingredients": ["ingredient1", "ingredient2", ...],
+    "allergens": ["allergen1", "allergen2", ...]
+  }
+  ''';
+
+    try {
+      final response = await widget.model.generateContent([
+        Content.multi([
+          TextPart(prompt),
+          DataPart('image/jpeg', imageBytes),
+        ]),
+      ]);
+
+      String jsonString = response.text ?? '{}';
+
+      // Remove any markdown code block indicators
+      jsonString = jsonString.replaceAll('```json', '').replaceAll('```', '');
+
+      // Trim any leading or trailing whitespace
+      jsonString = jsonString.trim();
+
+      // Parse the JSON response
+      final jsonResponse = json.decode(jsonString);
+      return NutritionInfo.fromJson(jsonResponse);
+    } catch (e) {
+      print('Error generating nutrition info: $e');
+      return NutritionInfo.empty();
+    }
   }
 
   @override
@@ -123,7 +201,9 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
           ),
         ),
       ),
-      body: Padding(
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Padding(
         padding: EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
@@ -262,7 +342,7 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
                 ),
                 SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: _takePhotoAndFillInfo,
+                  onPressed: () => _getImage(ImageSource.camera),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -293,7 +373,7 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
                 ElevatedButton(
                   onPressed: () {
                     // if (_formKey.currentState!.validate()) {
-                      _storeMealLog();
+                    _storeMealLog();
                     // }
                   },
                   child: Text('Save Meal Log'),
@@ -303,6 +383,54 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class NutritionInfo {
+  final String name;
+  final int calories;
+  final int protein;
+  final int carbs;
+  final int fat;
+  final int servingSize;
+  final List<String> ingredients;
+  final List<String> allergens;
+
+  NutritionInfo({
+    required this.name,
+    required this.calories,
+    required this.protein,
+    required this.carbs,
+    required this.fat,
+    required this.servingSize,
+    required this.ingredients,
+    required this.allergens,
+  });
+
+  factory NutritionInfo.fromJson(Map<String, dynamic> json) {
+    return NutritionInfo(
+      name: json['name'] ?? 'Unknown',
+      calories: json['calories'] ?? 0,
+      protein: json['protein'] ?? 0,
+      carbs: json['carbs'] ?? 0,
+      fat: json['fat'] ?? 0,
+      servingSize: json['servingSize'] ?? 0,
+      ingredients: List<String>.from(json['ingredients'] ?? []),
+      allergens: List<String>.from(json['allergens'] ?? []),
+    );
+  }
+
+  factory NutritionInfo.empty() {
+    return NutritionInfo(
+      name: 'Unknown',
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      servingSize: 0,
+      ingredients: [],
+      allergens: [],
     );
   }
 }
