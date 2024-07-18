@@ -228,13 +228,32 @@ class _MealPage2State extends State<MealPage2> {
       child: Column(
         children: [
           SizedBox(height: 8),
-          Text(
-            '2,640 - 621 + 0 = 2,019',
-            style: TextStyle(
-                fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FutureBuilder<LoggedMeal?>(
+                future: _fetchLoggedMeal(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasData) {
+                    LoggedMeal loggedMeal = snapshot.data!;
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                            child: Text('Total Calories: ${loggedMeal.totalCaloriesLoggedMeal} kCal', style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),)
+                        ),
+                      ],
+                    );
+                  } else {
+                    return Text('0');
+                  }
+                },
+              ),
+            ],
           ),
-          Text('Goal     Food   Exercise     Remaining',
-              style: TextStyle(color: Colors.white)),
           SizedBox(height: 8),
         ],
       ),
@@ -255,7 +274,7 @@ class _MealPage2State extends State<MealPage2> {
             leading: Icon(Icons.restaurant, color: Colors.blue),
             title: Text(mealType.mealTypeName,
                 style: TextStyle(fontWeight: FontWeight.bold)),
-            trailing: Text('${mealType.totalCalories} Cal',
+            trailing: Text('${mealType.totalCalories} kCal',
                 style: TextStyle(color: Colors.blue)),
           ),
           ...mealType.mealItems.map((food) => ListTile(

@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 
-
 class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Your Daily Stats'),
+        title: Text('Your Daily Stats', style: TextStyle(color: Colors.black)),
         centerTitle: true,
         backgroundColor: Colors.white,
-        elevation: 0,
-        foregroundColor: Colors.black,
+        elevation: 1,
+        iconTheme: IconThemeData(color: Colors.black),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -23,10 +22,6 @@ class ProfilePage extends StatelessWidget {
               FavoriteSection(),
               SizedBox(height: 16),
               WeightStatistics(),
-              SizedBox(height: 16),
-              BMISection(),
-              SizedBox(height: 16),
-              HealthStats(),
               SizedBox(height: 16),
               NutrientsSection(),
             ],
@@ -42,11 +37,11 @@ class DailyStats extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(15),
       ),
-      elevation: 3,
+      elevation: 4,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
             Row(
@@ -59,6 +54,8 @@ class DailyStats extends StatelessWidget {
                 CircularProgressIndicator(
                   value: 0.75,
                   strokeWidth: 8,
+                  backgroundColor: Colors.grey[200],
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
                 ),
                 StatItem(
                   label: 'Eaten',
@@ -66,11 +63,15 @@ class DailyStats extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 8),
+            SizedBox(height: 12),
             Center(
               child: Text(
                 '1645 Kcal available',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),
               ),
             ),
           ],
@@ -94,9 +95,10 @@ class StatItem extends StatelessWidget {
           label,
           style: TextStyle(fontSize: 14, color: Colors.grey),
         ),
+        SizedBox(height: 4),
         Text(
           value,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ],
     );
@@ -110,14 +112,14 @@ class FavoriteSection extends StatelessWidget {
       children: [
         Expanded(
           child: FavoriteCard(
-            title: 'Favourite product',
+            title: 'Favourite Product',
             items: ['Avocado 6 times', 'Apple 6 times', 'Fish 5 times', 'Eggs 7 times'],
           ),
         ),
-        SizedBox(width: 8),
+        SizedBox(width: 16),
         Expanded(
           child: FavoriteCard(
-            title: 'Favourite brand',
+            title: 'Favourite Brand',
             items: ['Danone SA', 'Mondelez', 'Unilever', 'Nestle'],
           ),
         ),
@@ -136,20 +138,23 @@ class FavoriteCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(15),
       ),
-      elevation: 3,
+      elevation: 4,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
             ),
             SizedBox(height: 8),
-            ...items.map((item) => Text(item)).toList(),
+            ...items.map((item) => Padding(
+              padding: const EdgeInsets.only(bottom: 4.0),
+              child: Text(item, style: TextStyle(fontSize: 14, color: Colors.grey[700])),
+            )).toList(),
           ],
         ),
       ),
@@ -162,80 +167,20 @@ class WeightStatistics extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(15),
       ),
-      elevation: 3,
+      elevation: 4,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Your weight statistics',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              'Your Weight Statistics',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
             ),
-            SizedBox(height: 8),
+            SizedBox(height: 12),
             // Replace with your weight statistics graph
-            Placeholder(fallbackHeight: 100),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class BMISection extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      elevation: 3,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Body Mass Index (BMI)',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Your Healthy BMI: 24.7'),
-                // Replace with your BMI slider
-                Expanded(child: Placeholder(fallbackHeight: 40)),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class HealthStats extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      elevation: 3,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Your health stats',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            // Replace with your health stats graph
             Placeholder(fallbackHeight: 100),
           ],
         ),
@@ -249,28 +194,27 @@ class NutrientsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(15),
       ),
-      elevation: 3,
+      elevation: 4,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Protein, fats, carbohydrates',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              'Protein, Fats, Carbohydrates',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
             ),
-            SizedBox(height: 8),
+            SizedBox(height: 12),
             // Replace with your nutrients information
             Placeholder(fallbackHeight: 100),
             SizedBox(height: 16),
             Text(
               "You don't eat enough foods rich in vitamin E",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.redAccent),
             ),
-            SizedBox(height: 8),
-            // Replace with your vitamin E foods
+            SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -279,8 +223,8 @@ class NutrientsSection extends StatelessWidget {
                 Expanded(child: VitaminEItem(name: 'Avocado', percentage: '14% DV')),
               ],
             ),
-            SizedBox(height: 8),
-            Center(child: ElevatedButton(onPressed: () {}, child: Text('See more'))),
+            SizedBox(height: 12),
+            Center(child: ElevatedButton(onPressed: () {}, child: Text('See More'))),
           ],
         ),
       ),
@@ -301,12 +245,21 @@ class VitaminEItem extends StatelessWidget {
         // Replace with image of the food item
         Placeholder(fallbackHeight: 50, fallbackWidth: 50),
         SizedBox(height: 4),
-        Text(name),
+        Text(name, style: TextStyle(fontSize: 14)),
         Text(
           percentage,
-          style: TextStyle(color: Colors.grey),
+          style: TextStyle(color: Colors.grey, fontSize: 12),
         ),
       ],
     );
   }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: ProfilePage(),
+    theme: ThemeData(
+      primarySwatch: Colors.blue,
+    ),
+  ));
 }

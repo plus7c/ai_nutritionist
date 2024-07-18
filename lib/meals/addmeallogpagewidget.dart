@@ -272,12 +272,12 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
                     ],
                   ),
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: _addMealItem,
                   child: Text('Add Meal Item'),
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: 8),
                 if (_mealItems.isNotEmpty)
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -290,7 +290,6 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
                       )),
                     ],
                   ),
-                SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
                     // if (_formKey.currentState!.validate()) {

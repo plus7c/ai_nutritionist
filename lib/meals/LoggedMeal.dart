@@ -92,6 +92,10 @@ class LoggedMeal {
     required this.mealTypes,
   });
 
+  int get totalCaloriesLoggedMeal {
+    return mealTypes.fold(0, (sum, item) => sum + item.totalCalories);
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'timeOfLogging': timeOfLogging,
