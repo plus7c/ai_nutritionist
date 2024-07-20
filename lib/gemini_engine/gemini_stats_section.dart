@@ -8,11 +8,16 @@ Future<String> generateOutputFromGemini(String prompt) async {
   return aiResponse!;
 }
 
+bool useMock = true;
+
 GenerativeModel getGeminiInstance(){
   return model;
 }
 
 Future<String> getGeminiRecommendationForStats(double protein, double fats, double carbs) async {
+  if (useMock) {
+    return "Using Mock IMplemntation for Stats Nutrition";
+  }
   String prompt = """
   Analyze the following nutrient intake data for today and provide a personalized recommendation based on the nutritional needs. 
   The recommendation should be focused on maintaining a balanced diet and addressing any deficiencies or excesses. 
@@ -33,6 +38,9 @@ Future<String> getGeminiRecommendationForStats(double protein, double fats, doub
 }
 
 Future<String> getGeminiRecommendationForBMI(double bmi) async {
+  if (useMock) {
+    return "Using Mock IMplemntation for Stats Nutrition";
+  }
   String prompt = """
   Analyze the following Body Mass Index (BMI) value and provide a personalized recommendation based on the user's health status. 
   The recommendation should be focused on maintaining or achieving a healthy BMI and addressing any potential health concerns. 

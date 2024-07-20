@@ -5,6 +5,7 @@ import 'package:pizza_ordering_app/auth/signup.dart';
 import 'package:pizza_ordering_app/chatpage/chatpage.dart';
 import 'package:pizza_ordering_app/home/profile.dart';
 import 'package:pizza_ordering_app/onboarding/onboarding.dart';
+import 'package:pizza_ordering_app/photologger/foodloggerpage.dart';
 import 'package:pizza_ordering_app/photologger/photologger.dart';
 import 'package:pizza_ordering_app/stats/stats_page.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -44,7 +45,7 @@ class _HomePageState extends State<HomePage> {
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _widgetOptions = <Widget>[
     HomeProfile(),
-    FoodLogWidget(model: getGeminiInstance()),
+    FoodLoggerPage(),
     ChatPage(),
     StatsPage(),
   ];
@@ -99,7 +100,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
     home: Directionality(
       textDirection: TextDirection.ltr,
-      child: FoodLogWidget(model: getGeminiInstance()), // Wrap OnboardingScreen with Scaffold
+      child: FoodLoggerPage()
     ),
     routes: {
       '/login': (context) => LoginScreen(), // Define a route to login

@@ -21,6 +21,11 @@ class _BMICardState extends State<BMICard> {
     _fetchRecommendation();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   String _getBMICategory(double bmi) {
     if (bmi < 18.5) {
       return 'Underweight';

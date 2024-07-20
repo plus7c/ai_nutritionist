@@ -5,6 +5,7 @@ import 'package:pizza_ordering_app/stats/stats_page.dart';
 
 import '../chatpage/chatpage.dart';
 import '../home/profile.dart';
+import '../photologger/foodloggerpage.dart';
 import '../photologger/photologger.dart';
 
 class AppTemplate extends StatefulWidget {
@@ -17,7 +18,8 @@ class _AppTemplateState extends State<AppTemplate> {
   static List<Widget> _widgetOptions = <Widget>[
     HomeProfile(),
     ChatPage(),
-    FoodLogWidget(model: getGeminiInstance()),
+    // FoodLogWidget(model: getGeminiInstance()),
+    FoodLoggerPage(),
     StatsPage(),
     MealPage2(), // Placeholder for the new profile page
   ];

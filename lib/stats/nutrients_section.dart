@@ -28,14 +28,18 @@ class _NutrientsSectionState extends State<NutrientsSection> {
     _fetchRecommendation();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Future<void> _fetchRecommendation() async {
     setState(() {
       _isLoading = true;
     });
 
     // Call to Gemini to get the recommendation
-    // This is a mock function. Replace with actual API call to Gemini
-    await Future.delayed(Duration(seconds: 2));  // Mocking network delay
+    // This is a mock function. Replace with actual API call to Gemini// Mocking network delay
     String recommendation = await getGeminiRecommendationForStats(widget.protein, widget.fats, widget.carbs);
 
     setState(() {
