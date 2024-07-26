@@ -12,8 +12,8 @@ import 'LoggedMeal.dart';
 
 class AddMealLogPage extends StatefulWidget {
   final GenerativeModel model;
-
-  const AddMealLogPage({Key? key, required this.model}) : super(key: key);
+  final Function addMealToLog;
+  const AddMealLogPage({Key? key, required this.model, required this.addMealToLog}) : super(key: key);
 
   @override
   _AddMealLogPageState createState() => _AddMealLogPageState();
@@ -93,6 +93,7 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
         existingLoggedMeal.mealTypes.add(newMealType);
       }
 
+      widget.addMealToLog(existingLoggedMeal);
       await loggedMealsRef.doc(docId).update(existingLoggedMeal.toMap());
     } else {
       LoggedMeal newLoggedMeal = LoggedMeal(timeOfLogging: _selectedDate, mealTypes: [newMealType]);

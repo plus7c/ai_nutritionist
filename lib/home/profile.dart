@@ -126,7 +126,7 @@ class _HomeProfileState extends State<HomeProfile> {
         foregroundColor: Colors.black,
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator()) :
+          ? Center(child: CircularProgressIndicator()):
       SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

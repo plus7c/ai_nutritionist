@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pizza_ordering_app/gemini_utils.dart';
 import 'package:pizza_ordering_app/meals/mealpageAndAddFoodPage.dart';
 import 'package:pizza_ordering_app/stats/stats_page.dart';
-
 import '../chatpage/chatpage.dart';
-import '../home/profile.dart';
+import '../home/mainhome.dart';
 import '../photologger/foodloggerpage.dart';
-import '../photologger/photologger.dart';
 
 class AppTemplate extends StatefulWidget {
   @override
@@ -16,7 +13,8 @@ class AppTemplate extends StatefulWidget {
 class _AppTemplateState extends State<AppTemplate> {
   int _selectedIndex = 0;
   static List<Widget> _widgetOptions = <Widget>[
-    HomeProfile(),
+    // HomeProfile(),
+    MainHome(),
     ChatPage(),
     // FoodLogWidget(model: getGeminiInstance()),
     FoodLoggerPage(),

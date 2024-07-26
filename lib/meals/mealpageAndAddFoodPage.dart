@@ -15,6 +15,13 @@ class _MealPage2State extends State<MealPage2> {
   DateTime _selectedDate = DateTime.now();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late LoggedMeal currentMeal;
+
+  @override
+  void initState() {
+    super.initState();
+    _updateCurrentMeal();
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -26,6 +33,16 @@ class _MealPage2State extends State<MealPage2> {
     if (picked != null && picked != _selectedDate) {
       setState(() {
         _selectedDate = picked;
+      });
+    }
+    await _updateCurrentMeal();
+  }
+
+  Future<void> _updateCurrentMeal() async {
+    final meal = await _fetchLoggedMeal();
+    if (meal != null) {
+      setState(() {
+        currentMeal = meal;
       });
     }
   }
@@ -44,9 +61,11 @@ class _MealPage2State extends State<MealPage2> {
         .where('timeOfLogging', isLessThanOrEqualTo: Timestamp.fromDate(endOfDay))
         .get();
 
-    if (querySnapshot.docs.isNotEmpty) {
+    if (querySnapshot.
+    docs.isNotEmpty) {
       Map<String, dynamic> data = querySnapshot.docs.first.data() as Map<String, dynamic>;
-      return LoggedMeal.fromMap(data);
+      LoggedMeal fetchedData = LoggedMeal.fromMap(data);
+      return fetchedData;
     } else {
       return null;
     }
@@ -97,7 +116,12 @@ class _MealPage2State extends State<MealPage2> {
                 title: Text('LOG FOOD', style: TextStyle(color: Colors.blue)),
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => AddMealLogPage(model: getGeminiInstance(),)),
+                  MaterialPageRoute(
+                    builder: (context) => AddMealLogPage(
+                      model: getGeminiInstance(),
+                      addMealToLog: addMealToLog,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -109,7 +133,7 @@ class _MealPage2State extends State<MealPage2> {
                 } else if (snapshot.hasData) {
                   LoggedMeal loggedMeal = snapshot.data!;
                   return Column(
-                    children: loggedMeal.mealTypes
+                    children: currentMeal.mealTypes
                         .map((mealType) => _buildMealSection(context, mealType))
                         .toList(),
                   );
@@ -154,6 +178,12 @@ class _MealPage2State extends State<MealPage2> {
     } else {
       await loggedMealsRef.add(loggedMeal.toMap());
     }
+  }
+
+  void addMealToLog(LoggedMeal meal){
+    setState(() {
+      currentMeal = meal;
+    });
   }
 
   Widget _buildDateTimePicker(BuildContext context) {
