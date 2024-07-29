@@ -38,9 +38,6 @@ Future<String> getGeminiRecommendationForStats(double protein, double fats, doub
 }
 
 Future<String> getGeminiRecommendationForBMI(double bmi) async {
-  if (useMock) {
-    return "Using Mock IMplemntation for Stats Nutrition";
-  }
   String prompt = """
   Analyze the following Body Mass Index (BMI) value and provide a personalized recommendation based on the user's health status. 
   The recommendation should be focused on maintaining or achieving a healthy BMI and addressing any potential health concerns. 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:pizza_ordering_app/apptemplate/apptemplate.dart';
 import 'package:pizza_ordering_app/home/profile.dart';
 import 'package:intl/intl.dart';
 
@@ -59,7 +60,7 @@ class _UserStatsOnboardingState extends State<UserStatsOnboarding> {
         DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
         if (userDoc.exists) {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => HomeProfile()),
+            MaterialPageRoute(builder: (context) => AppTemplate()),
           );
         } else {
           setState(() {

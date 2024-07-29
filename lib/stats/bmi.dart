@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../firebase_gemini_helper/firebase_gemini_helper.dart';
 import '../gemini_engine/gemini_stats_section.dart';
 
 class BMICard extends StatefulWidget {
@@ -44,7 +45,7 @@ class _BMICardState extends State<BMICard> {
     });
 
     // Call to Gemini to get the recommendation
-    String recommendation = await getGeminiRecommendationForBMI(widget.bmi);
+    String recommendation = await getBMIRecommendation();
 
     setState(() {
       _recommendation = recommendation;

@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:fluttermoji/fluttermoji.dart';
 
+import '../firebase_gemini_helper/firebase_gemini_helper.dart';
+
 class HomeProfile extends StatefulWidget {
   @override
   _HomeProfileState createState() => _HomeProfileState();
@@ -270,10 +272,14 @@ class _HomeProfileState extends State<HomeProfile> {
                   int feet = int.parse(feetController.text);
                   int inches = int.parse(inchesController.text);
                   _updateField(field, {'feet': feet, 'inches': inches});
+                  //doing this to trigger an update on the recommendation for the BMI since its affected by height
+                  getBMIRecommendation(triggeredFromProfilePage: true);
                 }
               } else if (value.isNotEmpty) {
                 if (field == 'weight') {
                   _updateField(field, double.parse(value));
+                  //doing this to trigger an update on the recommendation for the BMI since its affected by weight
+                  getBMIRecommendation(triggeredFromProfilePage: true);
                 } else {
                   _updateField(field, value);
                 }
