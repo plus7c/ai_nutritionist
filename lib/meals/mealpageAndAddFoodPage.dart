@@ -61,8 +61,7 @@ class _MealPage2State extends State<MealPage2> {
         .where('timeOfLogging', isLessThanOrEqualTo: Timestamp.fromDate(endOfDay))
         .get();
 
-    if (querySnapshot.
-    docs.isNotEmpty) {
+    if (querySnapshot.docs.isNotEmpty) {
       Map<String, dynamic> data = querySnapshot.docs.first.data() as Map<String, dynamic>;
       LoggedMeal fetchedData = LoggedMeal.fromMap(data);
       return fetchedData;
@@ -71,25 +70,88 @@ class _MealPage2State extends State<MealPage2> {
     }
   }
 
+  Future<bool> _deleteMealItem(MealType mealType, MealItem mealItem) async {
+    String userId = _auth.currentUser!.uid;
+    DateTime startOfDay = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, 0, 0, 0);
 
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('loggedmeals')
+          .where('timeOfLogging', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+          .where('timeOfLogging', isLessThanOrEqualTo: Timestamp.fromDate(startOfDay.add(Duration(days: 1))))
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        DocumentReference docRef = querySnapshot.docs.first.reference;
+
+        // Update the meal type
+        int mealTypeIndex = currentMeal.mealTypes.indexWhere((mt) => mt.mealTypeName == mealType.mealTypeName);
+        if (mealTypeIndex != -1) {
+          currentMeal.mealTypes[mealTypeIndex].mealItems.removeWhere((item) => item.id == mealItem.id);
+          currentMeal.mealTypes[mealTypeIndex].totalCalories -= mealItem.calories;
+        }
+
+        // Update Firestore
+        await docRef.update(currentMeal.toMap());
+
+        // Update local state
+        setState(() {
+          // The currentMeal has already been updated above
+        });
+
+        return true;
+      }
+      return false;
+    } catch (e) {
+      print('Error deleting meal item: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete meal item. Please try again.')),
+      );
+      return false;
+    }
+  }
+  Future<bool> _showDeleteConfirmationDialog(MealType mealType, MealItem mealItem) async {
+    return await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Meal Item'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Are you sure you want to delete this meal item?'),
+                Text(mealItem.mealItemName, style: TextStyle(fontWeight: FontWeight.bold)),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            TextButton(
+              child: Text('Delete'),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+                _deleteMealItem(mealType, mealItem);
+              },
+            ),
+          ],
+        );
+      },
+    ) ?? false;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Calories Remaining'),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.flash_on,  color: Colors.white),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(Icons.check_circle_outline, color: Colors.white),
-            onPressed: () {
-              // Save logic will be implemented here
-            },
-          ),
-        ],
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -160,24 +222,6 @@ class _MealPage2State extends State<MealPage2> {
         ],
       ),
     );
-  }
-
-  Future<void> _storeLoggedMeal(LoggedMeal loggedMeal) async {
-    String userId = _auth.currentUser!.uid;
-    DateTime logDate = DateTime(loggedMeal.timeOfLogging.year, loggedMeal.timeOfLogging.month, loggedMeal.timeOfLogging.day);
-
-    CollectionReference loggedMealsRef = _firestore.collection('users').doc(userId).collection('loggedmeals');
-
-    QuerySnapshot existingLogs = await loggedMealsRef
-        .where('timeOfLogging', isEqualTo: Timestamp.fromDate(logDate))
-        .get();
-
-    if (existingLogs.docs.isNotEmpty) {
-      String docId = existingLogs.docs.first.id;
-      await loggedMealsRef.doc(docId).update(loggedMeal.toMap());
-    } else {
-      await loggedMealsRef.add(loggedMeal.toMap());
-    }
   }
 
   void addMealToLog(LoggedMeal meal){
@@ -291,24 +335,24 @@ class _MealPage2State extends State<MealPage2> {
             trailing: Text('${mealType.totalCalories} kCal',
                 style: TextStyle(color: Colors.blue)),
           ),
-          ...mealType.mealItems.map((food) => ListTile(
-            title: Text(food.mealItemName),
-            trailing: Text('${food.calories} Cal',
-                style: TextStyle(color: Colors.grey)),
+          ...mealType.mealItems.map((food) => Dismissible(
+            key: Key(food.id),
+            background: Container(
+              color: Colors.red,
+              alignment: Alignment.centerRight,
+              padding: EdgeInsets.only(right: 20),
+              child: Icon(Icons.delete, color: Colors.white),
+            ),
+            direction: DismissDirection.endToStart,
+            confirmDismiss: (direction) async {
+              return await _showDeleteConfirmationDialog(mealType, food);
+            },
+            child: ListTile(
+              title: Text(food.mealItemName),
+              trailing: Text('${food.calories} kCal',
+                  style: TextStyle(color: Colors.grey)),
+            ),
           )),
-          // ListTile(
-          //   leading: Icon(Icons.add, color: Colors.blue),
-          //   title: Text('ADD FOOD', style: TextStyle(color: Colors.blue)),
-          //   onTap: () => Navigator.push(
-          //     context,
-          //     MaterialPageRoute(builder: (context) => AddMealLogPage()),
-          //   )
-          //   //     Navigator.push(
-          //   //   context,
-          //   //   MaterialPageRoute(
-          //   //       builder: (context) => AddFoodPage(mealType: mealType.mealTypeName)),
-          //   // ),
-          // ),
         ],
       ),
     );

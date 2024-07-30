@@ -71,6 +71,7 @@ Future<String> getBMIRecommendation({bool triggeredFromProfilePage = false}) asy
     return 'Error fetching recommendation. Please try again later.';
   }
 }
+
 class HealthStatus {
   final int score;
   final String recommendation;

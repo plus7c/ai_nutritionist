@@ -4,7 +4,7 @@ import '../firestore_helper.dart';
 
 class NutritionistPrompt {
   final List<String> conversationHistory = [];
-  final int maxHistoryLength = 20; // Adjust as needed
+  final int maxHistoryLength = 50;
   String? userHealthData;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;

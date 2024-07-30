@@ -157,7 +157,7 @@ class _HomeProfileState extends State<HomeProfile> {
               _buildInfoTile('Date of Birth', dateOfBirth != null ? DateFormat('MMM d, y').format(dateOfBirth!) : 'Not set', Icons.cake, _showDateOfBirthPicker),
               _buildInfoTile('Allergies', allergies.isNotEmpty ? allergies.join(', ') : 'None', Icons.warning, _showAllergiesDialog),
               SizedBox(height: 24),
-              Text('Goals', style: Theme.of(context).textTheme.headline6),
+              Text('Goals', style: Theme.of(context).textTheme.titleLarge),
               ..._buildGoalItems(),
             ],
           ),
@@ -274,6 +274,7 @@ class _HomeProfileState extends State<HomeProfile> {
                   _updateField(field, {'feet': feet, 'inches': inches});
                   //doing this to trigger an update on the recommendation for the BMI since its affected by height
                   getBMIRecommendation(triggeredFromProfilePage: true);
+
                 }
               } else if (value.isNotEmpty) {
                 if (field == 'weight') {

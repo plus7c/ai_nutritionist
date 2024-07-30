@@ -1,16 +1,19 @@
 // LoggedMeal.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:uuid/uuid.dart';
 
 class MealItem {
-  String mealItemName;
-  int calories;
-  double carbs;
-  double fats;
-  double protein;
-  double servingSize;
-  String servingUnit;
+  final String id;
+  final String mealItemName;
+  final int calories;
+  final double carbs;
+  final double fats;
+  final double protein;
+  final double servingSize;
+  final String servingUnit;
 
   MealItem({
+    required this.id,
     required this.mealItemName,
     required this.calories,
     required this.carbs,
@@ -20,20 +23,9 @@ class MealItem {
     this.servingUnit = 'g',
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'mealItemName': mealItemName,
-      'calories': calories,
-      'carbs': carbs,
-      'fats': fats,
-      'protein': protein,
-      'servingSize': servingSize,
-      'servingUnit': servingUnit,
-    };
-  }
-
   static MealItem fromMap(Map<String, dynamic> map) {
     return MealItem(
+      id: map['id'] ?? Uuid().v4(), // Use the existing ID or generate a new one
       mealItemName: map['mealItemName'] ?? '',
       calories: map['calories'] ?? 0,
       carbs: map['carbs']?.toDouble() ?? 0.0,
@@ -43,8 +35,20 @@ class MealItem {
       servingUnit: map['servingUnit'] ?? 'g',
     );
   }
-}
 
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'mealItemName': mealItemName,
+      'calories': calories,
+      'carbs': carbs,
+      'fats': fats,
+      'protein': protein,
+      'servingSize': servingSize,
+      'servingUnit': servingUnit,
+    };
+  }
+}
 class MealType {
   String mealTypeName;
   List<MealItem> mealItems;

@@ -8,6 +8,7 @@ import 'dart:convert';
 // ignore: unused_import
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:firebase_vertexai/firebase_vertexai.dart';
+import 'package:uuid/uuid.dart';
 import 'LoggedMeal.dart';
 
 class AddMealLogPage extends StatefulWidget {
@@ -42,6 +43,7 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
     if (_mealItemNameController.text.isNotEmpty && _caloriesController.text.isNotEmpty) {
       setState(() {
         _mealItems.add(MealItem(
+          id: Uuid().v4(), // Generate a unique ID
           mealItemName: _mealItemNameController.text,
           calories: int.parse(_caloriesController.text),
           carbs: _carbsController.text.isNotEmpty ? double.parse(_carbsController.text) : 0.0,
