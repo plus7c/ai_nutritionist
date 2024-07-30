@@ -51,23 +51,45 @@ class _ChatPageState extends State<ChatPage> {
     final prompt = [Content.text(_nutritionistPrompt.generatePrompt((userMessage as types.TextMessage).text))];
 
     try {
-      final response = await model.generateContent(prompt);
-      String? aiResponse = response.text;
+      final responseStream = await model.generateContentStream(prompt);
 
-      if (aiResponse != null && aiResponse.isNotEmpty) {
-        _addMessage(types.TextMessage(
-          author: _aiUser,
-          createdAt: DateTime.now().millisecondsSinceEpoch,
-          id: const Uuid().v4(),
-          text: aiResponse,
-        ));
-      } else {
-        _addMessage(types.TextMessage(
-          author: _aiUser,
-          createdAt: DateTime.now().millisecondsSinceEpoch,
-          id: const Uuid().v4(),
-          text: "I'm sorry, I couldn't generate a response. Please try again.",
-        ));
+      String fullResponse = '';
+      String tempMessageId = const Uuid().v4();
+
+      // Add an initial empty message to start the stream
+      _addMessage(types.TextMessage(
+        author: _aiUser,
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+        id: tempMessageId,
+        text: '',
+      ));
+
+      await for (final chunk in responseStream) {
+        if (chunk.text != null) {
+          fullResponse += chunk.text!;
+
+          // Update the message with each chunk
+          setState(() {
+            final index = _messages.indexWhere((m) => m.id == tempMessageId);
+            if (index != -1) {
+              _messages[index] = (_messages[index] as types.TextMessage).copyWith(
+                text: fullResponse,
+              );
+            }
+          });
+        }
+      }
+
+      // If no response was generated, add an error message
+      if (fullResponse.isEmpty) {
+        setState(() {
+          final index = _messages.indexWhere((m) => m.id == tempMessageId);
+          if (index != -1) {
+            _messages[index] = (_messages[index] as types.TextMessage).copyWith(
+              text: "I'm sorry, I couldn't generate a response. Please try again.",
+            );
+          }
+        });
       }
     } catch (e) {
       print('Error generating AI response: $e');
@@ -77,6 +99,18 @@ class _ChatPageState extends State<ChatPage> {
         id: const Uuid().v4(),
         text: "An error occurred while generating a response. Please try again later.",
       ));
+    }
+  }
+
+// This method should be implemented to either add a new message or update an existing one
+  void _addOrUpdateMessage(types.TextMessage message, {bool isPartial = false}) {
+    // If it's a partial message, update the existing message
+    if (isPartial) {
+      // Implement logic to update existing message
+      // This might involve using a state management solution or calling setState
+    } else {
+      // If it's the final message, add it as a new message
+      _addMessage(message);
     }
   }
 
