@@ -48,7 +48,10 @@ class _ChatPageState extends State<ChatPage> {
 
   Future<void> _generateAIResponse(types.Message userMessage) async {
     final model = FirebaseVertexAI.instance.generativeModel(model: 'gemini-1.5-flash');
-    final prompt = [Content.text(_nutritionistPrompt.generatePrompt((userMessage as types.TextMessage).text))];
+
+    // Wait for the prompt to be generated
+    String generatedPrompt = await _nutritionistPrompt.generatePrompt((userMessage as types.TextMessage).text);
+    final prompt = [Content.text(generatedPrompt)];
 
     try {
       final responseStream = await model.generateContentStream(prompt);
@@ -90,6 +93,9 @@ class _ChatPageState extends State<ChatPage> {
             );
           }
         });
+      } else {
+        // Add the AI's response to the conversation history
+        _nutritionistPrompt.addAssistantResponse(fullResponse);
       }
     } catch (e) {
       print('Error generating AI response: $e');
