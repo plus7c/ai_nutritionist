@@ -342,43 +342,98 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
                   keyboardType: TextInputType.number,
                 ),
                 SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => _getImage(ImageSource.camera),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.camera_alt),
-                      SizedBox(width: 8),
-                      Text('Take Photo'),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 8),
-                ElevatedButton(
-                  onPressed: _addMealItem,
-                  child: Text('Add Meal Item'),
-                ),
-                SizedBox(height: 8),
-                if (_mealItems.isNotEmpty)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Meal Items:', style: TextStyle(fontWeight: FontWeight.bold)),
-                      ..._mealItems.map((item) => ListTile(
-                        title: Text(item.mealItemName),
-                        subtitle: Text(
-                            'Calories: ${item.calories}, Carbs: ${item.carbs}g, Fats: ${item.fats}g, Protein: ${item.protein}g, Serving Size: ${item.servingSize}g'),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () => _getImage(ImageSource.camera),
+                            icon: Icon(Icons.camera_alt),
+                            label: Text('Take Photo'),
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: _addMealItem,
+                            icon: Icon(Icons.add),
+                            label: Text('Add Meal Item'),
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                    if (_mealItems.isNotEmpty) ...[
+                      Text(
+                        'Meal Items:',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                      SizedBox(height: 8),
+                      ..._mealItems.map((item) => Card(
+                        elevation: 2,
+                        margin: EdgeInsets.only(bottom: 8),
+                        child: ListTile(
+                          title: Text(
+                            item.mealItemName,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 4),
+                              Text('Calories: ${item.calories} kcal'),
+                              Text('Carbs: ${item.carbs}g | Fats: ${item.fats}g | Protein: ${item.protein}g'),
+                              Text('Serving Size: ${item.servingSize}g'),
+                            ],
+                          ),
+                          trailing: IconButton(
+                            icon: Icon(Icons.delete, color: Colors.red),
+                            onPressed: () {
+                              // Implement delete functionality
+                              setState(() {
+                                _mealItems.remove(item);
+                              });
+                            },
+                          ),
+                        ),
                       )),
+                      SizedBox(height: 16),
                     ],
-                  ),
-                ElevatedButton(
-                  onPressed: () {
-                    // if (_formKey.currentState!.validate()) {
-                    _storeMealLog();
-                    // }
-                  },
-                  child: Text('Save Meal Log'),
-                ),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                          _storeMealLog();
+                      },
+                      icon: Icon(Icons.save),
+                      label: Text('Save Meal Log'),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        backgroundColor: Colors.purple,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
               ],
             ),
           ),

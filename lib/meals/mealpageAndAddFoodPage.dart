@@ -187,6 +187,7 @@ class _MealPage2State extends State<MealPage2> {
                 ),
               ),
             ),
+            ListTile(leading: Icon(Icons.warning_amber_outlined, color: Colors.red), title: Text('To delete log entry swipe left', style: TextStyle(fontStyle: FontStyle.italic),),),
             FutureBuilder<LoggedMeal?>(
               future: _fetchLoggedMeal(),
               builder: (context, snapshot) {
@@ -319,6 +320,10 @@ class _MealPage2State extends State<MealPage2> {
   }
 
   Widget _buildMealSection(BuildContext context, MealType mealType) {
+    if (mealType.mealItems.isEmpty) {
+      return SizedBox.shrink(); // Return an empty widget if there are no meal items
+    }
+
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 4,
@@ -345,7 +350,12 @@ class _MealPage2State extends State<MealPage2> {
             ),
             direction: DismissDirection.endToStart,
             confirmDismiss: (direction) async {
-              return await _showDeleteConfirmationDialog(mealType, food);
+              bool shouldDelete = await _showDeleteConfirmationDialog(mealType, food);
+              if (shouldDelete) {
+                bool deleted = await _deleteMealItem(mealType, food);
+                return deleted;
+              }
+              return false;
             },
             child: ListTile(
               title: Text(food.mealItemName),
