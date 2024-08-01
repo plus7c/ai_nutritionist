@@ -107,7 +107,7 @@ class _UserStatsOnboardingState extends State<UserStatsOnboarding> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('User data saved successfully!')),
           );
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeProfile()));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AppTemplate()));
         } catch (e) {
           print('Error saving user data: $e');
           ScaffoldMessenger.of(context).showSnackBar(
@@ -362,7 +362,6 @@ class _UserStatsOnboardingState extends State<UserStatsOnboarding> {
               onPressed: _saveUserData,
               child: Text('Save Profile'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
                 padding: EdgeInsets.symmetric(vertical: 15),
                 textStyle: TextStyle(fontSize: 18),
               ),

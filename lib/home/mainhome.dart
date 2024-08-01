@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pizza_ordering_app/home/privacy.dart';
 import 'package:pizza_ordering_app/home/profile.dart';
 
 import '../firebase_gemini_helper/firebase_gemini_helper.dart';
@@ -84,6 +85,24 @@ class _MainHomeState extends State<MainHome> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => HomeProfile()),
+                    );
+                  },
+                ),
+              ), Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ListTile(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  leading: Icon(Icons.edit, color: Colors.blue[700]),
+                  title: Text('Privacy Policy', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+                  subtitle: Text('You can delete your data or export it here'),
+                  trailing: Icon(Icons.arrow_forward_ios, color: Colors.blue[700]),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => DeleteAccountPage()),
                     );
                   },
                 ),
