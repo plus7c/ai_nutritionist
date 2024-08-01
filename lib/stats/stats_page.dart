@@ -3,9 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:pizza_ordering_app/stats/nutrients_section.dart';
+import 'package:pizza_ordering_app/stats/variables.dart';
+import 'package:intl/intl.dart';
 
 import '../firestore_helper.dart';
 import 'bmi.dart';
+import 'dateselect.dart';
 import 'weightstats.dart';
 
 class StatsPage extends StatefulWidget {
@@ -25,11 +28,27 @@ class _StatsPageState extends State<StatsPage> {
   double _totalCarbs = 0;
   List<FlSpot> _weightData = [];
   bool _isLoading = true;
+  DateTime _selectedDate = DateTime.now();
 
   @override
   void initState() {
     super.initState();
     _fetchUserData();
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+      _fetchUserData();
+    }
   }
 
   Future<void> _fetchUserData() async {
@@ -50,9 +69,9 @@ class _StatsPageState extends State<StatsPage> {
       _bmi = calculateBMI(userData?['weight'], totalHeightInches);
     });
 
-    // Fetch daily meals
-    DateTime startOfDay = DateTime.now().toUtc().startOfDay;
-    DateTime endOfDay = DateTime.now().toUtc().endOfDay;
+    // Fetch daily meals for the selected date
+    DateTime startOfDay = _selectedDate.startOfDay;
+    DateTime endOfDay = _selectedDate.endOfDay;
 
     QuerySnapshot mealLogs = await _firestore.collection('users').doc(userId).collection('loggedmeals')
         .where('timeOfLogging', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
@@ -115,11 +134,16 @@ class _StatsPageState extends State<StatsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              DateSelectButton(
+                selectedDate: _selectedDate,
+                onPressed: () => _selectDate(context),
+              ),
+              SizedBox(height: 16),
               DailyStats(totalCaloriesEaten: _totalCaloriesEaten),
               SizedBox(height: 16),
               BMICard(bmi: _bmi),
               SizedBox(height: 16),
-              WeightStatistics(weightData: _weightData),
+              // WeightStatistics(weightData: _weightData),
               SizedBox(height: 16),
               NutrientsSection(protein: _totalProtein, fats: _totalFats, carbs: _totalCarbs)
             ],
@@ -151,7 +175,7 @@ class DailyStats extends StatelessWidget {
               children: [
                 StatItem(
                   label: 'Daily calories',
-                  value: '2181',
+                  value: '$calorieGoal',
                 ),
                 CircularProgressIndicator(
                   value: totalCaloriesEaten / 2181,

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:pizza_ordering_app/gemini_utils.dart';
+import '../stats/dateselect.dart';
 import 'LoggedMeal.dart';
 import 'addmeallogpagewidget.dart';
 
@@ -232,44 +233,9 @@ class _MealPage2State extends State<MealPage2> {
   }
 
   Widget _buildDateTimePicker(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      child: Center(
-        child: InkWell(
-          onTap: () => _selectDate(context),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Log Date',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
-                SizedBox(width: 5),
-                Icon(Icons.calendar_today, color: Colors.white),
-                SizedBox(width: 8),
-                Text(
-                  DateFormat('MMM d, yyyy').format(_selectedDate),
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+    return DateSelectButton(
+      selectedDate: _selectedDate,
+      onPressed: () => _selectDate(context),
     );
   }
 

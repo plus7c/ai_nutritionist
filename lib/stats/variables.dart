@@ -1,0 +1,1 @@
+double calorieGoal = 2181.0;
