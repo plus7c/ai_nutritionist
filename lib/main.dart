@@ -6,11 +6,9 @@ import 'package:pizza_ordering_app/chatpage/chatpage.dart';
 import 'package:pizza_ordering_app/home/profile.dart';
 import 'package:pizza_ordering_app/onboarding/onboarding.dart';
 import 'package:pizza_ordering_app/photologger/foodloggerpage.dart';
-import 'package:pizza_ordering_app/photologger/photologger.dart';
 import 'package:pizza_ordering_app/stats/stats_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'gemini_utils.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -4,12 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:pizza_ordering_app/stats/nutrients_section.dart';
 import 'package:pizza_ordering_app/stats/variables.dart';
-import 'package:intl/intl.dart';
 
 import '../firestore_helper.dart';
 import 'bmi.dart';
 import 'dateselect.dart';
-import 'weightstats.dart';
 
 class StatsPage extends StatefulWidget {
   @override
