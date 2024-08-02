@@ -46,6 +46,41 @@ class _MainHomeState extends State<MainHome> {
     return recommendations.take(3).map((rec) => Text('• $rec')).toList();
   }
 
+  Future<void> _showSignOutConfirmationDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // User must tap button to close dialog
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Sign Out'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Are you sure you want to sign out?'),
+                Text('You will need to sign in again to access your account.'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel', style: TextStyle(color: Colors.grey)),
+              onPressed: () {
+                Navigator.of(context).pop(); // Dismiss the dialog
+              },
+            ),
+            TextButton(
+              child: Text('Sign Out', style: TextStyle(color: Colors.green)),
+              onPressed: () {
+                Navigator.of(context).pop(); // Dismiss the dialog
+                _signOut(context); // Call the sign out function
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> _signOut(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
@@ -94,10 +129,11 @@ class _MainHomeState extends State<MainHome> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      _signOut(context);
+                      _showSignOutConfirmationDialog(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.green, backgroundColor: Colors.white,
+                      foregroundColor: Colors.green,
+                      backgroundColor: Colors.white,
                       side: BorderSide(color: Colors.green),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -132,7 +168,8 @@ class _MainHomeState extends State<MainHome> {
                     );
                   },
                 ),
-              ), Card(
+              ),
+              Card(
                 elevation: 4,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -153,40 +190,40 @@ class _MainHomeState extends State<MainHome> {
               ),
               SizedBox(height: 16),
               Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  children: [
-                    ListTile(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      title: Text('Overall Health Status',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
-                      subtitle: _isLoading
-                          ? CircularProgressIndicator()
-                          : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: _buildRecommendationList(),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Text(
-                        _isLoading ? '...' : '${_healthStatus?.score ?? 0}/100',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      ListTile(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        title: Text('Overall Health Status',
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+                        subtitle: _isLoading
+                            ? CircularProgressIndicator()
+                            : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: _buildRecommendationList(),
                         ),
                       ),
-                    ),
-                    SizedBox(height: 15,)
-                  ],
-                )
+                      Container(
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(
+                          _isLoading ? '...' : '${_healthStatus?.score ?? 0}/100',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 15,)
+                    ],
+                  )
               ),
               // Add more cards here for additional options
             ],
