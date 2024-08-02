@@ -335,13 +335,6 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       flexibleSpace: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.blue, Colors.purple],
-          ),
-        ),
       ),
       centerTitle: true,
       title: Text(
@@ -377,17 +370,17 @@ class _ChatPageState extends State<ChatPage> {
         user: _user,
         theme: DefaultChatTheme(
           backgroundColor: Colors.transparent,
-          primaryColor: Colors.blue[700]!,
-          secondaryColor: Colors.purple[100]!,
-          userAvatarNameColors: [Colors.purple, Colors.green, Colors.orange],
+          primaryColor: Colors.green,
+          // secondaryColor: Colors.purple[100]!,
+          userAvatarNameColors: [Colors.green, Colors.green, Colors.orange],
           inputBackgroundColor: Colors.grey[200]!,
           inputTextColor: Colors.black87,
-          inputTextCursorColor: Colors.blue,
+          inputTextCursorColor: Colors.green,
           messageBorderRadius: 20,
-          sendButtonIcon: Icon(Icons.send, color: Colors.blue[700]),
+          sendButtonIcon: Icon(Icons.send, color: Colors.green),
           deliveredIcon: Icon(Icons.check_circle, color: Colors.green),
           errorColor: Colors.redAccent,
-          seenIcon: Icon(Icons.remove_red_eye, color: Colors.blue[700]),
+          seenIcon: Icon(Icons.remove_red_eye, color: Colors.greenAccent),
         ),
       ),
     ),

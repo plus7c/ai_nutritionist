@@ -13,13 +13,11 @@ class AppTemplate extends StatefulWidget {
 class _AppTemplateState extends State<AppTemplate> {
   int _selectedIndex = 0;
   static List<Widget> _widgetOptions = <Widget>[
-    // HomeProfile(),
     MainHome(),
     ChatPage(),
-    // FoodLogWidget(model: getGeminiInstance()),
     FoodLoggerPage(),
     StatsPage(),
-    MealPage2(), // Placeholder for the new profile page
+    MealPage2(),
   ];
 
   @override
@@ -28,110 +26,144 @@ class _AppTemplateState extends State<AppTemplate> {
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
+      bottomNavigationBar: CurvedNavigationBar(
+        backgroundColor: Colors.transparent,
+        color: Colors.green,
+        buttonBackgroundColor: Colors.orange,
+        height: 90,
+        index: _selectedIndex,
+        onTap: (index) {
           setState(() {
-            _selectedIndex = 2; // Index of Photo AI
+            _selectedIndex = index;
           });
         },
-        child: Icon(Icons.camera_alt, color: Colors.white),
-        backgroundColor: Colors.amber[800],
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: CircularNotchedRectangle(),
-        notchMargin: 10,
-        child: Container(
-          height: 60,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  MaterialButton(
-                    minWidth: 40,
-                    onPressed: () {
-                      setState(() {
-                        _selectedIndex = 0;
-                      });
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.home,
-                          color: _selectedIndex == 0 ? Colors.amber[800] : Colors.grey,
-                        ),
-                        Text('Home', style: TextStyle(color: _selectedIndex == 0 ? Colors.amber[800] : Colors.grey))
-                      ],
-                    ),
-                  ),
-                  MaterialButton(
-                    minWidth: 40,
-                    onPressed: () {
-                      setState(() {
-                        _selectedIndex = 1;
-                      });
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.chat,
-                          color: _selectedIndex == 1 ? Colors.amber[800] : Colors.grey,
-                        ),
-                        Text('Gemini AI', style: TextStyle(color: _selectedIndex == 1 ? Colors.amber[800] : Colors.grey))
-                      ],
-                    ),
-                  )
-                ],
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  MaterialButton(
-                    minWidth: 40,
-                    onPressed: () {
-                      setState(() {
-                        _selectedIndex = 3;
-                      });
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.bar_chart,
-                          color: _selectedIndex == 3 ? Colors.amber[800] : Colors.grey,
-                        ),
-                        Text('Stats', style: TextStyle(color: _selectedIndex == 3 ? Colors.amber[800] : Colors.grey))
-                      ],
-                    ),
-                  ),
-                  MaterialButton(
-                    minWidth: 40,
-                    onPressed: () {
-                      setState(() {
-                        _selectedIndex = 4;
-                      });
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.set_meal,
-                          color: _selectedIndex == 4 ? Colors.amber[800] : Colors.grey,
-                        ),
-                        Text('Meals', style: TextStyle(color: _selectedIndex == 4 ? Colors.amber[800] : Colors.grey))
-                      ],
-                    ),
-                  )
-                ],
-              )
-            ],
-          ),
-        ),
+        items: const <Widget>[
+          Icon(Icons.home, size: 30, color: Colors.white),
+          Icon(Icons.chat, size: 30, color: Colors.white),
+          Icon(Icons.camera_alt, size: 30, color: Colors.white),
+          Icon(Icons.bar_chart, size: 30, color: Colors.white),
+          Icon(Icons.set_meal, size: 30, color: Colors.white),
+        ],
       ),
     );
   }
+}
+
+class CurvedNavigationBar extends StatefulWidget {
+  final List<Widget> items;
+  final int index;
+  final Color color;
+  final Color buttonBackgroundColor;
+  final Color backgroundColor;
+  final ValueChanged<int> onTap;
+  final double height;
+
+  CurvedNavigationBar({
+    Key? key,
+    required this.items,
+    this.index = 0,
+    this.color = Colors.white,
+    this.buttonBackgroundColor = Colors.white,
+    this.backgroundColor = Colors.blueAccent,
+    required this.onTap,
+    this.height = 75.0,
+  }) : super(key: key);
+
+  @override
+  _CurvedNavigationBarState createState() => _CurvedNavigationBarState();
+}
+
+class _CurvedNavigationBarState extends State<CurvedNavigationBar> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+  int _endingIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    _animation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOut,
+      reverseCurve: Curves.easeIn,
+    ));
+    _endingIndex = widget.index;
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: widget.backgroundColor,
+      height: widget.height,
+      child: Stack(
+        clipBehavior: Clip.none, alignment: Alignment.bottomCenter,
+        children: <Widget>[
+          CustomPaint(
+            size: Size(MediaQuery.of(context).size.width, widget.height),
+            painter: CurvedPainter(widget.color),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: widget.items.map((item) {
+              int index = widget.items.indexOf(item);
+              return GestureDetector(
+                onTap: () {
+                  widget.onTap(index);
+                  setState(() {
+                    _endingIndex = index;
+                  });
+                  _animationController.forward(from: 0);
+                },
+                child: AnimatedBuilder(
+                  animation: _animation,
+                  builder: (context, child) {
+                    return Transform.translate(
+                      offset: Offset(0, _endingIndex == index ? -_animation.value * 20 : 0),
+                      child: child,
+                    );
+                  },
+                  child: Container(
+                    width: 60,
+                    height: 60,
+                    child: Center(child: item),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CurvedPainter extends CustomPainter {
+  final Color color;
+
+  CurvedPainter(this.color);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    Path path = Path()
+      ..moveTo(0, 20)
+      ..quadraticBezierTo(size.width / 2, 0, size.width, 20)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

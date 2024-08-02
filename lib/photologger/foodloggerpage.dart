@@ -82,8 +82,16 @@ class _FoodLoggerPageState extends State<FoodLoggerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Food Logger'),
-        backgroundColor: Colors.blue,
+        centerTitle: true,
+        title: Text(
+          'Upload or Click',
+          style: TextStyle(
+            fontSize: 22.0,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Roboto',
+          ),
+        ),
+        leading: Icon(Icons.upload_file_sharp),
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
@@ -93,8 +101,8 @@ class _FoodLoggerPageState extends State<FoodLoggerPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Select an option:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+              'You can upload or click to learn about food infront of you or upload a photo',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
             ),
             SizedBox(height: 16),
             _buildOptionButton('Detect Allergens 🥜', 'allergen'),
@@ -148,7 +156,7 @@ class _FoodLoggerPageState extends State<FoodLoggerPage> {
           child: Text("$action for $title"),
           style: ElevatedButton.styleFrom(
             foregroundColor: Colors.white,
-            backgroundColor: Colors.blue,
+            backgroundColor: Colors.green,
             padding: EdgeInsets.all(10.0),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8), // Slightly rounded corners

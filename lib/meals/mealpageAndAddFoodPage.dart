@@ -151,17 +151,16 @@ class _MealPage2State extends State<MealPage2> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Calories Remaining'),
         centerTitle: true,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.white, Colors.purple],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+        title: Text(
+          'Calories Remaining',
+          style: TextStyle(
+            fontSize: 22.0,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Roboto',
           ),
         ),
+        leading: Icon(Icons.heat_pump_sharp),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -242,13 +241,6 @@ class _MealPage2State extends State<MealPage2> {
   Widget _buildCaloriesRemaining() {
     return Container(
       padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.blue, Colors.purple],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
       child: Column(
         children: [
           SizedBox(height: 8),
@@ -267,13 +259,13 @@ class _MealPage2State extends State<MealPage2> {
                       children: [
                         Container(
                             child: Text('Total Calories: ${loggedMeal.totalCaloriesLoggedMeal} kCal', style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),)
+                                fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),)
                         ),
                       ],
                     );
                   } else {
                     return Text('Total Calories: 0 kCal', style: TextStyle(
-                        fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white));
+                        fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black));
                   }
                 },
               ),

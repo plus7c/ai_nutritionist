@@ -47,8 +47,16 @@ class _MainHomeState extends State<MainHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile Options'),
-        backgroundColor: Colors.blue[700],
+        centerTitle: true,
+        title: Text(
+          'Profile Options',
+          style: TextStyle(
+            fontSize: 22.0,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Roboto',
+          ),
+        ),
+        leading: Icon(Icons.face_2_sharp),
         elevation: 0,
       ),
       body: SafeArea(
@@ -59,9 +67,9 @@ class _MainHomeState extends State<MainHome> {
             children: <Widget>[
               Text(
                 'Hi there!',
-                style: Theme.of(context).textTheme.headline4?.copyWith(
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Colors.blue[700],
+                  color: Colors.green,
                 ),
               ),
               SizedBox(height: 20),
@@ -77,10 +85,10 @@ class _MainHomeState extends State<MainHome> {
                 ),
                 child: ListTile(
                   contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  leading: Icon(Icons.edit, color: Colors.blue[700]),
+                  leading: Icon(Icons.edit, color: Colors.green),
                   title: Text('Edit Profile', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
                   subtitle: Text('configure your height, weight, age, allergens, goals'),
-                  trailing: Icon(Icons.arrow_forward_ios, color: Colors.blue[700]),
+                  trailing: Icon(Icons.arrow_forward_ios, color: Colors.green),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -95,10 +103,10 @@ class _MainHomeState extends State<MainHome> {
                 ),
                 child: ListTile(
                   contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  leading: Icon(Icons.edit, color: Colors.blue[700]),
+                  leading: Icon(Icons.edit, color: Colors.green),
                   title: Text('Privacy Policy', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
                   subtitle: Text('You can delete your data or export it here'),
-                  trailing: Icon(Icons.arrow_forward_ios, color: Colors.blue[700]),
+                  trailing: Icon(Icons.arrow_forward_ios, color: Colors.green),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -113,31 +121,35 @@ class _MainHomeState extends State<MainHome> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: ListTile(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  leading: Icon(Icons.favorite, color: Colors.blue[700]),
-                  title: Text('Overall Health Status',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
-                  subtitle: _isLoading
-                      ? CircularProgressIndicator()
-                      : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: _buildRecommendationList(),
-                  ),
-                  trailing: Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.blue[700],
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Text(
-                      _isLoading ? '...' : '${_healthStatus?.score ?? 0}/100',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                child: Column(
+                  children: [
+                    ListTile(
+                      contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      title: Text('Overall Health Status',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+                      subtitle: _isLoading
+                          ? CircularProgressIndicator()
+                          : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: _buildRecommendationList(),
                       ),
                     ),
-                  ),
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Text(
+                        _isLoading ? '...' : '${_healthStatus?.score ?? 0}/100',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 15,)
+                  ],
                 )
               ),
               // Add more cards here for additional options

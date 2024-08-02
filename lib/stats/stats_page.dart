@@ -118,8 +118,16 @@ class _StatsPageState extends State<StatsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Your Daily Stats', style: TextStyle(color: Colors.black)),
         centerTitle: true,
+        title: Text(
+          'Daily Stats',
+          style: TextStyle(
+            fontSize: 22.0,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Roboto',
+          ),
+        ),
+        leading: Icon(Icons.query_stats_sharp),
         backgroundColor: Colors.white,
         elevation: 1,
         iconTheme: IconThemeData(color: Colors.black),
