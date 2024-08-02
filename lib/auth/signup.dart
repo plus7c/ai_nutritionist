@@ -44,64 +44,91 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child:
-            ElevatedButton(
-              onPressed: () async {
-                User? user = await _signInWithGoogle();
-                if (user != null) {
-                  print(user);
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => UserStatsOnboarding()),
-                  );
-                }
-              },
-              child: Text('Sign in with Google'),
-            ),
-            // TextField(
-            //   decoration: InputDecoration(labelText: 'Email'),
-            //   keyboardType: TextInputType.emailAddress,
-            //   onChanged: (value) {
-            //     // Save email input
-            //   },
-            // ),
-            // TextField(
-            //   decoration: InputDecoration(labelText: 'Password'),
-            //   obscureText: true,
-            //   onChanged: (value) {
-            //     // Save password input
-            //   },
-            // ),
-            // ElevatedButton(
-            //   onPressed: () async {
-            //     // Call _signInWithEmail with the saved email and password
-            //
-            //     User? user = await _signInWithEmail('email', 'password');
-            //     if (user != null) {
-            //       //check whether user is new or existing
-            //       var storeduserId = _firestoreService.getUserData(user.uid);
-            //       if (storeduserId == null)
-            //       {
-            //         Navigator.pushReplacement(
-            //           context,
-            //           MaterialPageRoute(builder: (context) => UserStatsOnboarding()),
-            //         );
-            //       }
-            //       Navigator.pushReplacement(
-            //         context,
-            //         MaterialPageRoute(builder: (context) => ChatPage()),
-            //       );
-            //     }
-            //   },
-            //   child: Text('Sign in with Email'),
-            // ),
-
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.green[100]!, Colors.green[50]!],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Spacer(),
+              Icon(
+                Icons.local_dining,
+                size: 100,
+                color: Colors.green[700],
+              ),
+              SizedBox(height: 20),
+              Text(
+                'Welcome to NutriTrack',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green[800],
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'Your personal nutrition assistant',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black,
+                ),
+              ),
+              Spacer(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: ElevatedButton(
+                  onPressed: () async {
+                    User? user = await _signInWithGoogle();
+                    if (user != null) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => UserStatsOnboarding()),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.green[600],
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    elevation: 5,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.login_sharp),
+                      SizedBox(width: 10),
+                      Text(
+                        'Sign In With Google',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              Text(
+                'By signing in, you agree to our Terms and Privacy Policy',
+                style: TextStyle(
+                  color: Colors.green[800],
+                  fontSize: 12,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              Spacer(),
+            ],
+          ),
         ),
       ),
     );

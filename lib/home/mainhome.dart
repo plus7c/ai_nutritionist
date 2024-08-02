@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pizza_ordering_app/home/privacy.dart';
 import 'package:pizza_ordering_app/home/profile.dart';
 
+import '../auth/signup.dart';
 import '../firebase_gemini_helper/firebase_gemini_helper.dart';
 
 class MainHome extends StatefulWidget {
@@ -43,6 +46,20 @@ class _MainHomeState extends State<MainHome> {
     return recommendations.take(3).map((rec) => Text('• $rec')).toList();
   }
 
+  Future<void> _signOut(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      await GoogleSignIn().signOut();
+      // Navigate to login page or initial page after sign out
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginScreen())); // Replace with your login route
+    } catch (e) {
+      print('Error signing out: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error signing out. Please try again.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,19 +82,38 @@ class _MainHomeState extends State<MainHome> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
-                'Hi there!',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Hi there!',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      _signOut(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.green, backgroundColor: Colors.white,
+                      side: BorderSide(color: Colors.green),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      'Sign Out',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                      ),
+                    ),
+                  )
+                ],
               ),
-              SizedBox(height: 20),
-              Text(
-                'What would you like to do?',
-                style: Theme.of(context).textTheme.subtitle1,
-              ),
-              SizedBox(height: 20),
+              SizedBox(height: 10),
               Card(
                 elevation: 4,
                 shape: RoundedRectangleBorder(

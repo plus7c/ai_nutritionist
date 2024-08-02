@@ -105,7 +105,10 @@ class SignInConfirmationPage extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       // Navigate to login page
-                      Navigator.of(context).pushReplacementNamed('/login'); // Replace with your login route
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                      );
                     },
                     child: Text('Go to Login'),
                   ),
