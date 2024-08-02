@@ -1,9 +1,9 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -13,27 +13,44 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pizza_ordering_app/prompt.dart';
 import 'package:uuid/uuid.dart';
 import 'package:firebase_vertexai/firebase_vertexai.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
   @override
   State<ChatPage> createState() => _ChatPageState();
 }
+
 class _ChatPageState extends State<ChatPage> {
   List<types.Message> _messages = [];
-  final _user = const types.User(
-    id: '82091008-a484-4a89-ae75-a22bf8d6f3ac',
-  );
+  late types.User _user;
   final _aiUser = const types.User(
     id: 'gemini-ai',
     firstName: 'Gemini',
     lastName: 'AI',
   );
   var _nutritionistPrompt = NutritionistPrompt();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final auth.FirebaseAuth _auth = auth.FirebaseAuth.instance;
 
   @override
   void initState() {
     super.initState();
+    _initializeUser();
+  }
+
+  Future<void> _initializeUser() async {
+    auth.User? firebaseUser = _auth.currentUser;
+    if (firebaseUser == null) {
+      // If not signed in, sign in anonymously
+      firebaseUser = (await _auth.signInAnonymously()) as auth.User?;
+    }
+    setState(() {
+      _user = types.User(
+        id: firebaseUser!.uid,
+        firstName: firebaseUser.displayName ?? 'User',
+      );
+    });
     _loadMessages();
   }
 
@@ -41,15 +58,25 @@ class _ChatPageState extends State<ChatPage> {
     setState(() {
       _messages.insert(0, message);
     });
+    _saveMessageToFirestore(message);
     if (message.author.id == _user.id) {
       _generateAIResponse(message);
     }
   }
 
+  Future<void> _saveMessageToFirestore(types.Message message) async {
+    await _firestore.collection('users').doc(_user.id).collection('messages').add({
+      'author': message.author.toJson(),
+      'createdAt': message.createdAt,
+      'id': message.id,
+      'type': message.type.name,
+      'data': message is types.TextMessage ? {'text': message.text} : null,
+    });
+  }
+
   Future<void> _generateAIResponse(types.Message userMessage) async {
     final model = FirebaseVertexAI.instance.generativeModel(model: 'gemini-1.5-flash');
 
-    // Wait for the prompt to be generated
     String generatedPrompt = await _nutritionistPrompt.generatePrompt((userMessage as types.TextMessage).text);
     final prompt = [Content.text(generatedPrompt)];
 
@@ -59,7 +86,6 @@ class _ChatPageState extends State<ChatPage> {
       String fullResponse = '';
       String tempMessageId = const Uuid().v4();
 
-      // Add an initial empty message to start the stream
       _addMessage(types.TextMessage(
         author: _aiUser,
         createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -71,7 +97,6 @@ class _ChatPageState extends State<ChatPage> {
         if (chunk.text != null) {
           fullResponse += chunk.text!;
 
-          // Update the message with each chunk
           setState(() {
             final index = _messages.indexWhere((m) => m.id == tempMessageId);
             if (index != -1) {
@@ -83,7 +108,6 @@ class _ChatPageState extends State<ChatPage> {
         }
       }
 
-      // If no response was generated, add an error message
       if (fullResponse.isEmpty) {
         setState(() {
           final index = _messages.indexWhere((m) => m.id == tempMessageId);
@@ -94,8 +118,8 @@ class _ChatPageState extends State<ChatPage> {
           }
         });
       } else {
-        // Add the AI's response to the conversation history
         _nutritionistPrompt.addAssistantResponse(fullResponse);
+        _saveMessageToFirestore(_messages.first);
       }
     } catch (e) {
       print('Error generating AI response: $e');
@@ -105,18 +129,6 @@ class _ChatPageState extends State<ChatPage> {
         id: const Uuid().v4(),
         text: "An error occurred while generating a response. Please try again later.",
       ));
-    }
-  }
-
-// This method should be implemented to either add a new message or update an existing one
-  void _addOrUpdateMessage(types.TextMessage message, {bool isPartial = false}) {
-    // If it's a partial message, update the existing message
-    if (isPartial) {
-      // Implement logic to update existing message
-      // This might involve using a state management solution or calling setState
-    } else {
-      // If it's the final message, add it as a new message
-      _addMessage(message);
     }
   }
 
@@ -215,10 +227,8 @@ class _ChatPageState extends State<ChatPage> {
 
       if (message.uri.startsWith('http')) {
         try {
-          final index =
-          _messages.indexWhere((element) => element.id == message.id);
-          final updatedMessage =
-          (_messages[index] as types.FileMessage).copyWith(
+          final index = _messages.indexWhere((element) => element.id == message.id);
+          final updatedMessage = (_messages[index] as types.FileMessage).copyWith(
             isLoading: true,
           );
 
@@ -237,10 +247,8 @@ class _ChatPageState extends State<ChatPage> {
             await file.writeAsBytes(bytes);
           }
         } finally {
-          final index =
-          _messages.indexWhere((element) => element.id == message.id);
-          final updatedMessage =
-          (_messages[index] as types.FileMessage).copyWith(
+          final index = _messages.indexWhere((element) => element.id == message.id);
+          final updatedMessage = (_messages[index] as types.FileMessage).copyWith(
             isLoading: null,
           );
 
@@ -280,43 +288,108 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _loadMessages() async {
-    // final response = await rootBundle.loadString('assets/messages.json');
-     types.Message aiGreetingMessage = types.TextMessage(author: _aiUser,
-      id: const Uuid().v4(),
-      type: MessageType.text,
-      // createdAt: DateTime.now(), // Or a specific timestamp
-      showStatus: true,
-      roomId: 'general_chat', // Or your specific room ID
-      text: 'Hi there! I\'m your AI Nutritionist. Ready to start your journey towards a healthier you. How can I be of help? 😊',
-    );
-    List<types.Message> messages = [aiGreetingMessage];
-    // final messages = (jsonDecode(response) as List)
-    //     .map((e) => types.Message.fromJson(e as Map<String, dynamic>))
-    //     .toList();
+    QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
+        .collection('chats')
+        .doc(_user.id)
+        .collection('messages')
+        .orderBy('createdAt', descending: true)
+        .limit(50)
+        .get();
+
+    List<types.Message> loadedMessages = snapshot.docs.map((doc) {
+      final data = doc.data();
+      if (data['type'] == 'text') {
+        return types.TextMessage(
+          author: types.User.fromJson(data['author']),
+          createdAt: data['createdAt'],
+          id: data['id'],
+          text: data['data']['text'],
+        );
+      }
+      // Handle other message types if needed
+      return types.TextMessage(
+        author: types.User.fromJson(data['author']),
+        createdAt: data['createdAt'],
+        id: data['id'],
+        text: 'Unsupported message type',
+      );
+    }).toList();
+
+    if (loadedMessages.isEmpty) {
+      types.Message aiGreetingMessage = types.TextMessage(
+        author: _aiUser,
+        id: const Uuid().v4(),
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+        text: 'Hi there! I\'m your AI Nutrition assistant. Ready to start your journey towards a healthier you. How can I be of help? 😊',
+      );
+      loadedMessages.add(aiGreetingMessage);
+      _saveMessageToFirestore(aiGreetingMessage);
+    }
 
     setState(() {
-      _messages = messages;
+      _messages = loadedMessages;
     });
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.blue, Colors.purple],
+          ),
+        ),
+      ),
       centerTitle: true,
-      title: Text('AI Assistant Chat', style: TextStyle(fontSize: 20.0,),
-      ), // Replace 'yourTextStyle' with your actual text style
-      toolbarHeight: 20, // Adjust this value to control the overallheight of the AppBar
-      titleSpacing: 5, // Set this to 0 to remove the default spacing around the title
+      title: Text(
+        'AI Nutrition Assistant',
+        style: TextStyle(
+          fontSize: 22.0,
+          fontWeight: FontWeight.bold,
+          fontFamily: 'Roboto',
+        ),
+      ),
+      leading: Icon(Icons.health_and_safety),
+      elevation: 8,
     ),
-    body: Chat(
-      messages: _messages,
-      onAttachmentPressed: _handleAttachmentPressed,
-      onMessageTap: _handleMessageTap,
-      onPreviewDataFetched: _handlePreviewDataFetched,
-      onSendPressed: _handleSendPressed,
-      showUserAvatars: true,
-      showUserNames: true,
-      user: _user,
+    body: Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/background_image.jpg'),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(
+            Colors.white.withOpacity(0.7),
+            BlendMode.lighten,
+          ),
+        ),
+      ),
+      child: Chat(
+        messages: _messages,
+        onAttachmentPressed: _handleAttachmentPressed,
+        onMessageTap: _handleMessageTap,
+        onPreviewDataFetched: _handlePreviewDataFetched,
+        onSendPressed: _handleSendPressed,
+        showUserAvatars: true,
+        showUserNames: true,
+        user: _user,
+        theme: DefaultChatTheme(
+          backgroundColor: Colors.transparent,
+          primaryColor: Colors.blue[700]!,
+          secondaryColor: Colors.purple[100]!,
+          userAvatarNameColors: [Colors.purple, Colors.green, Colors.orange],
+          inputBackgroundColor: Colors.grey[200]!,
+          inputTextColor: Colors.black87,
+          inputTextCursorColor: Colors.blue,
+          messageBorderRadius: 20,
+          sendButtonIcon: Icon(Icons.send, color: Colors.blue[700]),
+          deliveredIcon: Icon(Icons.check_circle, color: Colors.green),
+          errorColor: Colors.redAccent,
+          seenIcon: Icon(Icons.remove_red_eye, color: Colors.blue[700]),
+        ),
+      ),
     ),
   );
 }

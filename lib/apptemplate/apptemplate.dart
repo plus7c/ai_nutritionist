@@ -81,7 +81,7 @@ class _AppTemplateState extends State<AppTemplate> {
                           Icons.chat,
                           color: _selectedIndex == 1 ? Colors.amber[800] : Colors.grey,
                         ),
-                        Text('Emma AI', style: TextStyle(color: _selectedIndex == 1 ? Colors.amber[800] : Colors.grey))
+                        Text('Gemini AI', style: TextStyle(color: _selectedIndex == 1 ? Colors.amber[800] : Colors.grey))
                       ],
                     ),
                   )
