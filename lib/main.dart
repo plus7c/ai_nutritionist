@@ -1,14 +1,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:pizza_ordering_app/auth/signup.dart';
-import 'package:pizza_ordering_app/chatpage/chatpage.dart';
-import 'package:pizza_ordering_app/home/profile.dart';
-import 'package:pizza_ordering_app/onboarding/onboarding.dart';
-import 'package:pizza_ordering_app/photologger/foodloggerpage.dart';
-import 'package:pizza_ordering_app/stats/stats_page.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'auth/signup.dart';
+import 'chatpage/chatpage.dart';
 import 'firebase_options.dart';
+import 'home/profile.dart';
+import 'onboarding/onboarding.dart';
+import 'photologger/foodloggerpage.dart';
+import 'stats/stats_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:pizza_ordering_app/home/privacy.dart';
-import 'package:pizza_ordering_app/home/profile.dart';
 
 import '../auth/signup.dart';
 import '../firebase_gemini_helper/firebase_gemini_helper.dart';
+import 'privacy.dart';
+import 'profile.dart';
 
 class MainHome extends StatefulWidget {
   @override

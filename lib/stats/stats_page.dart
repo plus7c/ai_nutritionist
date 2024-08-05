@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:pizza_ordering_app/stats/nutrients_section.dart';
-import 'package:pizza_ordering_app/stats/variables.dart';
 
 import '../firestore_helper.dart';
 import 'bmi.dart';
 import 'dateselect.dart';
+import 'nutrients_section.dart';
+import 'variables.dart';
 
 class StatsPage extends StatefulWidget {
   @override

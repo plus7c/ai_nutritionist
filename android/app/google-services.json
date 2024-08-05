@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:897369157103:android:d67cc75f2f2b555efa9a1a",
         "android_client_info": {
-          "package_name": "com.example.pizza_ordering_app"
+          "package_name": "com.example.NutrAI"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "897369157103-spk7jovn9lks2v3npfsbo6bmiahvf6sh.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.pizza_ordering_app",
+            "package_name": "com.example.NutrAI",
             "certificate_hash": "b2274a20c51e12bb1e48884a6175e8ec7a7c6870"
           }
         },
@@ -42,7 +42,7 @@
               "client_id": "897369157103-d9m8ljus24lcph69b09h6n5s9qkrrvf3.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.pizzaOrderingApp"
+                "bundle_id": "com.example.NutrAI"
               }
             }
           ]

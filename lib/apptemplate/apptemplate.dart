@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:pizza_ordering_app/meals/mealpageAndAddFoodPage.dart';
-import 'package:pizza_ordering_app/stats/stats_page.dart';
+
 import '../chatpage/chatpage.dart';
 import '../home/mainhome.dart';
+import '../meals/mealpageAndAddFoodPage.dart';
 import '../photologger/foodloggerpage.dart';
+import '../stats/stats_page.dart';
 
 class AppTemplate extends StatefulWidget {
   @override

@@ -10,10 +10,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pizza_ordering_app/prompt.dart';
 import 'package:uuid/uuid.dart';
 import 'package:firebase_vertexai/firebase_vertexai.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+
+import '../prompt.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});

@@ -1,11 +1,12 @@
+import 'package:NutrAI/auth/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:pizza_ordering_app/auth/signup.dart';
-import 'package:pizza_ordering_app/onboarding/userstatsonboarding.dart';
+
 
 import '../apptemplate/apptemplate.dart';
 import '../firestore_helper.dart';
+import '../onboarding/userstatsonboarding.dart';
 
 class SignInConfirmationPage extends StatelessWidget {
   SignInConfirmationPage({Key? key}) : super(key: key);
@@ -32,7 +33,9 @@ class SignInConfirmationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text('Sign In Confirmation'),
+        leading: Icon(Icons.login_sharp),
       ),
       body: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
@@ -100,7 +103,7 @@ class SignInConfirmationPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('No user is currently signed in.'),
+                  Text('No user is currently signed in.', style: TextStyle(fontSize: 20)),
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
@@ -110,7 +113,15 @@ class SignInConfirmationPage extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => LoginScreen()),
                       );
                     },
-                    child: Text('Go to Login'),
+                    child: Text('Go to Login', style: TextStyle(fontSize: 20)),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.green,
+                      padding: EdgeInsets.all(20.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8), // Slightly rounded corners
+                      ),
+                    )
                   ),
                 ],
               ),

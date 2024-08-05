@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:pizza_ordering_app/apptemplate/apptemplate.dart';
-import 'package:pizza_ordering_app/home/profile.dart';
 import 'package:intl/intl.dart';
+
+import '../apptemplate/apptemplate.dart';
 
 class UserStatsOnboarding extends StatefulWidget {
   const UserStatsOnboarding({Key? key}) : super(key: key);
@@ -362,9 +362,13 @@ class _UserStatsOnboardingState extends State<UserStatsOnboarding> {
               onPressed: _saveUserData,
               child: Text('Save Profile'),
               style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 15),
-                textStyle: TextStyle(fontSize: 18),
-              ),
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.green,
+                padding: EdgeInsets.all(10.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8), // Slightly rounded corners
+                ),
+              )
             ),
           ],
         ),

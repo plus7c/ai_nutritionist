@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:pizza_ordering_app/firestore_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:fluttermoji/fluttermoji.dart';
 
 import '../firebase_gemini_helper/firebase_gemini_helper.dart';
+import '../firestore_helper.dart';
 
 class HomeProfile extends StatefulWidget {
   @override

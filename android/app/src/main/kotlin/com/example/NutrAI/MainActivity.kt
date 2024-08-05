@@ -1,4 +1,4 @@
-package com.example.pizza_ordering_app
+package com.example.NutrAI
 
 import io.flutter.embedding.android.FlutterActivity
 
