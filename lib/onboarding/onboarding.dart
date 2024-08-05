@@ -31,7 +31,7 @@ class OnboardingScreen extends StatelessWidget {
           ),
           PageViewModel(
             title: "Track Your Nutrition",
-            body: "Log your food easily with barcode scanning and photo recognition.",
+            body: "Log your food easily with photo recognition.",
             image: Center(child: Image.asset("assets/images/14.jpeg", height: 175.0)),
             decoration: PageDecoration(
               titleTextStyle: TextStyle(color: darkGreen, fontSize: 24, fontWeight: FontWeight.bold),
@@ -41,7 +41,7 @@ class OnboardingScreen extends StatelessWidget {
           ),
           PageViewModel(
             title: "Get Expert Advice",
-            body: "Ask questions and receive tips to improve your eating habits.",
+            body: "Ask questions and receive tips to improve your eating habits. The AI will understand you better since it will have access to your basic stats such as height, weight and age",
             image: Center(child: Image.asset("assets/images/13.jpeg", height: 175.0)),
             decoration: PageDecoration(
               titleTextStyle: TextStyle(color: darkGreen, fontSize: 24, fontWeight: FontWeight.bold),
