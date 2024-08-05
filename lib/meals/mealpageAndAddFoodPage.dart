@@ -174,8 +174,8 @@ class _MealPage2State extends State<MealPage2> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: ListTile(
-                leading: Icon(Icons.add, color: Colors.blue),
-                title: Text('LOG FOOD', style: TextStyle(color: Colors.blue)),
+                leading: Icon(Icons.add, color: Colors.green),
+                title: Text('LOG FOOD', style: TextStyle(color: Colors.green)),
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(

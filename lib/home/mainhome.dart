@@ -201,7 +201,7 @@ class _MainHomeState extends State<MainHome> {
                         title: Text('Overall Health Status',
                             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
                         subtitle: _isLoading
-                            ? CircularProgressIndicator()
+                            ? Center(child: CircularProgressIndicator(color: Colors.green,))
                             : Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: _buildRecommendationList(),
