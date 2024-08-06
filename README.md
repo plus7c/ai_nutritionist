@@ -74,4 +74,4 @@ To install and run NutrAI, follow these steps:
 
 ### Contact
 
-## For any questions or feedback, please contact us at support@nutrai.com.
+## For any questions or feedback, please contact us at bhaulikpatel966@gmail.com.
