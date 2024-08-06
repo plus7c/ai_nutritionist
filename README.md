@@ -54,7 +54,7 @@ To install and run NutrAI, follow these steps:
 
 1. Clone the repository:
     ```bash
-    git clone [https://github.com/Bhaulik/NutrAI.git](https://github.com/Bhaulik/NutrAI/)
+    git clone https://github.com/Bhaulik/NutrAI/
     ```
 
 2. Navigate to the project directory:
