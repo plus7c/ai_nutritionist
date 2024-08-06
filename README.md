@@ -2,6 +2,9 @@
 
 NutriAI is an advanced mobile application that leverages artificial intelligence to provide personalized nutrition guidance. This app offers tailored meal plans, real-time nutritional advice, intelligent meal tracking, and an AI chatbot assistant. Supporting various diets and health conditions, NutriAI gamifies the nutrition journey and fosters a supportive community. It's your pocket nutritionist, combining cutting-edge AI technology with nutritional science to help users achieve their health and wellness goals.
 
+## App Screenshots
+![App Features](https://github.com/Bhaulik/NutrAI/blob/master/architecture/NutrAI%20features.png)
+
 ## Key Features:
 
 ### Home Page
@@ -44,11 +47,6 @@ NutriAI is an advanced mobile application that leverages artificial intelligence
 
 - Users can log their meals by uploading a photo, and the app uses image recognition to auto-populate meal log information.
 - Detailed logging features allow users to input meal details, including ingredients and portion sizes.
-
-
-## App Screenshots
-![App Features](https://github.com/Bhaulik/NutrAI/blob/master/architecture/NutrAI%20features.png)
-
 
 ## Installation
 
