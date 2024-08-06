@@ -10,4 +10,4 @@ NutriAI is an advanced mobile application that leverages artificial intelligence
 - Support for diverse diets and health conditions
 
 ## App Screenshots
-![App Features]([http://url/to/img.png](https://github.com/Bhaulik/NutrAI/blob/master/architecture/NutrAI%20features.png))
+![App Features](https://github.com/Bhaulik/NutrAI/blob/master/architecture/NutrAI%20features.png)
