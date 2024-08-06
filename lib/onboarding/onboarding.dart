@@ -20,8 +20,8 @@ class OnboardingScreen extends StatelessWidget {
       child: IntroductionScreen(
         pages: [
           PageViewModel(
-            title: "Welcome to Your Personal AI Nutritionist",
-            body: "Get personalized meal plans and recipes based on your dietary preferences.",
+            title: "Welcome to NutrAI",
+            body: "NutrAI is a cutting-edge mobile app that leverages advanced AI technology to offer personalized nutrition recommendations, meal planning, and food analysis",
             image: Center(child: Image.asset("assets/images/12.jpeg", height: 175.0)),
             decoration: PageDecoration(
               titleTextStyle: TextStyle(color: darkGreen, fontSize: 24, fontWeight: FontWeight.bold),
