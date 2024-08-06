@@ -72,6 +72,11 @@ To install and run NutrAI, follow these steps:
     flutter run
     ```
 
+## Current Limitations
+  - Currently the app works on Android devices and has been mostly tested on Android
+  - There are some configurations that need to be done for iOS to get it working properly on iOS
+
+
 ### Contact
 
 ## For any questions or feedback, please contact us at bhaulikpatel966@gmail.com.
