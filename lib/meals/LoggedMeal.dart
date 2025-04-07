@@ -25,7 +25,7 @@ class MealItem {
 
   static MealItem fromMap(Map<String, dynamic> map) {
     return MealItem(
-      id: map['id'] ?? Uuid().v4(), // Use the existing ID or generate a new one
+      id: map['id'] ?? const Uuid().v4(), // Use the existing ID or generate a new one
       mealItemName: map['mealItemName'] ?? '',
       calories: map['calories'] ?? 0,
       carbs: map['carbs']?.toDouble() ?? 0.0,
@@ -49,6 +49,7 @@ class MealItem {
     };
   }
 }
+
 class MealType {
   String mealTypeName;
   List<MealItem> mealItems;
@@ -102,7 +103,7 @@ class LoggedMeal {
 
   Map<String, dynamic> toMap() {
     return {
-      'timeOfLogging': timeOfLogging,
+      'timeOfLogging': Timestamp.fromDate(timeOfLogging),
       'mealTypes': mealTypes.map((type) => type.toMap()).toList(),
     };
   }

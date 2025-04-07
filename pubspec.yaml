@@ -1,4 +1,4 @@
-name: NutrAI
+name: nutrai
 description: "Personal Nutrition Assistant"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -30,6 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   introduction_screen: ^3.1.14
 
   # The following adds the Cupertino Icons font to your application.
@@ -54,10 +56,13 @@ dependencies:
   flutter_speed_dial: ^7.0.0
   cloud_firestore: ^5.1.0
   fluttermoji: ^1.0.2
-  fl_chart: ^0.36.0
+  fl_chart: ^0.65.0
   flutter_markdown: ^0.7.3
   pie_chart: ^5.4.0
   flutter_launcher_icons: ^0.13.1
+  shared_preferences: ^2.2.0
+  dio: ^5.3.2  # 用于千问API请求
+  flutter_dotenv: ^5.0.2  # 用于读取环境变量
 
 flutter_launcher_icons:
   android: "assets/icons/logo.png"
@@ -88,11 +93,12 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  # 添加本地化配置
+  generate: true
+
   # To add assets to your application, add an assets section, like this:
   assets:
-    -  assets/images/12.jpeg
-    -  assets/images/13.jpeg
-    -  assets/images/14.jpeg
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

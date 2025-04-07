@@ -5,16 +5,17 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
-import 'package:firebase_vertexai/firebase_vertexai.dart';
-import 'package:firebase_auth/firebase_auth.dart' as auth;
 
 import '../prompt.dart';
+import '../gemini_engine/gemini_stats_section.dart' as tongyi;
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -26,11 +27,11 @@ class _ChatPageState extends State<ChatPage> {
   List<types.Message> _messages = [];
   late types.User _user;
   final _aiUser = const types.User(
-    id: 'gemini-ai',
-    firstName: 'Gemini',
-    lastName: 'AI',
+    id: 'ai',
+    firstName: 'AI',
+    lastName: '',
   );
-  var _nutritionistPrompt = NutritionistPrompt();
+  final _nutritionistPrompt = NutritionistPrompt();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final auth.FirebaseAuth _auth = auth.FirebaseAuth.instance;
 
@@ -42,10 +43,7 @@ class _ChatPageState extends State<ChatPage> {
 
   Future<void> _initializeUser() async {
     auth.User? firebaseUser = _auth.currentUser;
-    if (firebaseUser == null) {
-      // If not signed in, sign in anonymously
-      firebaseUser = (await _auth.signInAnonymously()) as auth.User?;
-    }
+    firebaseUser ??= (await _auth.signInAnonymously()) as auth.User?;
     setState(() {
       _user = types.User(
         id: firebaseUser!.uid,
@@ -66,27 +64,48 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Future<void> _saveMessageToFirestore(types.Message message) async {
-    await _firestore.collection('users').doc(_user.id).collection('messages').add({
-      'author': message.author.toJson(),
-      'createdAt': message.createdAt,
-      'id': message.id,
-      'type': message.type.name,
-      'data': message is types.TextMessage ? {'text': message.text} : null,
-    });
+    try {
+      if (_auth.currentUser == null) {
+        print('无法保存消息到 Firestore：用户未登录');
+        return;
+      }
+      
+      print('正在保存消息到 Firestore，用户ID: ${_user.id}');
+      Map<String, dynamic> messageData = {
+        'author': message.author.toJson(),
+        'createdAt': message.createdAt,
+        'id': message.id,
+        'type': message.type.name,
+        'data': message is types.TextMessage ? {'text': message.text} : null,
+      };
+      
+      await _firestore.collection('users').doc(_user.id).collection('messages').add(messageData);
+      print('消息保存成功');
+    } catch (e) {
+      print('保存消息到 Firestore 失败: $e');
+      // 不抛出异常，以免影响用户体验
+    }
   }
 
   Future<void> _generateAIResponse(types.Message userMessage) async {
-    final model = FirebaseVertexAI.instance.generativeModel(model: 'gemini-1.5-flash');
-
-    String generatedPrompt = await _nutritionistPrompt.generatePrompt((userMessage as types.TextMessage).text);
-    final prompt = [Content.text(generatedPrompt)];
-
     try {
-      final responseStream = await model.generateContentStream(prompt);
+      if (_auth.currentUser == null) {
+        print('错误: 没有用户登录');
+        _addMessage(types.TextMessage(
+          author: _aiUser,
+          createdAt: DateTime.now().millisecondsSinceEpoch,
+          id: const Uuid().v4(),
+          text: AppLocalizations.of(context)!.noUserSignedInText,
+        ));
+        return;
+      }
 
-      String fullResponse = '';
+      print('正在生成提示...');
+      String generatedPrompt = await _nutritionistPrompt.generatePrompt((userMessage as types.TextMessage).text);
+      print('提示生成完成，长度: ${generatedPrompt.length}');
+      
+      // 添加一个临时消息，用于显示响应
       String tempMessageId = const Uuid().v4();
-
       _addMessage(types.TextMessage(
         author: _aiUser,
         createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -94,41 +113,67 @@ class _ChatPageState extends State<ChatPage> {
         text: '',
       ));
 
-      await for (final chunk in responseStream) {
-        if (chunk.text != null) {
-          fullResponse += chunk.text!;
+      print('开始调用千问API');
+      try {
+        // 调用千问API获取回复
+        String fullResponse = await tongyi.generateAIResponse(generatedPrompt);
+        print('收到千问API响应，长度: ${fullResponse.length}');
 
-          setState(() {
-            final index = _messages.indexWhere((m) => m.id == tempMessageId);
-            if (index != -1) {
-              _messages[index] = (_messages[index] as types.TextMessage).copyWith(
-                text: fullResponse,
-              );
-            }
-          });
-        }
-      }
-
-      if (fullResponse.isEmpty) {
+        // 更新消息内容
         setState(() {
           final index = _messages.indexWhere((m) => m.id == tempMessageId);
           if (index != -1) {
             _messages[index] = (_messages[index] as types.TextMessage).copyWith(
-              text: "I'm sorry, I couldn't generate a response. Please try again.",
+              text: fullResponse,
             );
           }
         });
-      } else {
-        _nutritionistPrompt.addAssistantResponse(fullResponse);
-        _saveMessageToFirestore(_messages.first);
+        
+        if (fullResponse.isEmpty) {
+          print('警告: 响应为空');
+          setState(() {
+            final index = _messages.indexWhere((m) => m.id == tempMessageId);
+            if (index != -1) {
+              _messages[index] = (_messages[index] as types.TextMessage).copyWith(
+                text: AppLocalizations.of(context)!.responseGenerationFailedText,
+              );
+            }
+          });
+        } else {
+          print('成功生成响应，长度: ${fullResponse.length}');
+          _nutritionistPrompt.addAssistantResponse(fullResponse);
+          
+          try {
+            print('尝试保存消息到 Firestore');
+            await _saveMessageToFirestore(_messages.first);
+            print('消息保存成功');
+          } catch (e) {
+            print('保存消息到 Firestore 失败: $e');
+            // 即使保存失败，也不影响聊天功能
+          }
+        }
+      } catch (e) {
+        print('千问API调用出错: $e');
+        setState(() {
+          final index = _messages.indexWhere((m) => m.id == tempMessageId);
+          if (index != -1) {
+            _messages[index] = (_messages[index] as types.TextMessage).copyWith(
+              text: AppLocalizations.of(context)!.errorGeneratingResponseText,
+            );
+          }
+        });
       }
     } catch (e) {
-      print('Error generating AI response: $e');
+      print('生成 AI 响应时出错: $e');
+      if (e.toString().contains('permission-denied')) {
+        print('Firestore 权限错误，可能需要更新安全规则');
+      }
+      
       _addMessage(types.TextMessage(
         author: _aiUser,
         createdAt: DateTime.now().millisecondsSinceEpoch,
         id: const Uuid().v4(),
-        text: "An error occurred while generating a response. Please try again later.",
+        text: AppLocalizations.of(context)!.errorGeneratingResponseText,
       ));
     }
   }
@@ -147,9 +192,9 @@ class _ChatPageState extends State<ChatPage> {
                   Navigator.pop(context);
                   _handleImageSelection();
                 },
-                child: const Align(
+                child: Align(
                   alignment: AlignmentDirectional.centerStart,
-                  child: Text('Photo'),
+                  child: Text(AppLocalizations.of(context)!.photoButtonText),
                 ),
               ),
               TextButton(
@@ -157,16 +202,16 @@ class _ChatPageState extends State<ChatPage> {
                   Navigator.pop(context);
                   _handleFileSelection();
                 },
-                child: const Align(
+                child: Align(
                   alignment: AlignmentDirectional.centerStart,
-                  child: Text('File'),
+                  child: Text(AppLocalizations.of(context)!.fileButtonText),
                 ),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Align(
+                child: Align(
                   alignment: AlignmentDirectional.centerStart,
-                  child: Text('Cancel'),
+                  child: Text(AppLocalizations.of(context)!.cancelButtonText),
                 ),
               ),
             ],
@@ -289,47 +334,94 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _loadMessages() async {
-    QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
-        .collection('chats')
-        .doc(_user.id)
-        .collection('messages')
-        .orderBy('createdAt', descending: true)
-        .limit(50)
-        .get();
-
-    List<types.Message> loadedMessages = snapshot.docs.map((doc) {
-      final data = doc.data();
-      if (data['type'] == 'text') {
-        return types.TextMessage(
-          author: types.User.fromJson(data['author']),
-          createdAt: data['createdAt'],
-          id: data['id'],
-          text: data['data']['text'],
-        );
+    try {
+      print('开始加载消息历史');
+      
+      // 检查用户是否已登录
+      if (_auth.currentUser == null) {
+        print('错误: 用户未登录，无法加载消息');
+        return;
       }
-      // Handle other message types if needed
-      return types.TextMessage(
-        author: types.User.fromJson(data['author']),
-        createdAt: data['createdAt'],
-        id: data['id'],
-        text: 'Unsupported message type',
-      );
-    }).toList();
+      
+      print('正在从 Firestore 加载消息，用户ID: ${_user.id}');
+      
+      // 修正 Firestore 路径 - 从 users 集合中获取消息，而不是 chats
+      QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
+          .collection('users')  // 修改这里，使用与 _saveMessageToFirestore 相同的路径
+          .doc(_user.id)
+          .collection('messages')
+          .orderBy('createdAt', descending: true)
+          .limit(50)
+          .get();
+      
+      print('成功获取消息，数量: ${snapshot.docs.length}');
 
-    if (loadedMessages.isEmpty) {
-      types.Message aiGreetingMessage = types.TextMessage(
-        author: _aiUser,
-        id: const Uuid().v4(),
-        createdAt: DateTime.now().millisecondsSinceEpoch,
-        text: 'Hi there! I\'m your AI Nutrition assistant. Ready to start your journey towards a healthier you. How can I be of help? 😊',
-      );
-      loadedMessages.add(aiGreetingMessage);
-      _saveMessageToFirestore(aiGreetingMessage);
+      List<types.Message> loadedMessages = snapshot.docs.map((doc) {
+        try {
+          final data = doc.data();
+          if (data['type'] == 'text') {
+            return types.TextMessage(
+              author: types.User.fromJson(data['author']),
+              createdAt: data['createdAt'],
+              id: data['id'],
+              text: data['data']['text'],
+            );
+          }
+          // Handle other message types if needed
+          return types.TextMessage(
+            author: types.User.fromJson(data['author']),
+            createdAt: data['createdAt'],
+            id: data['id'],
+            text: 'Unsupported message type',
+          );
+        } catch (e) {
+          print('解析消息时出错: $e');
+          // 返回一个占位消息，避免整个列表加载失败
+          return types.TextMessage(
+            author: _aiUser,
+            createdAt: DateTime.now().millisecondsSinceEpoch,
+            id: const Uuid().v4(),
+            text: 'Error loading message',
+          );
+        }
+      }).toList();
+
+      if (loadedMessages.isEmpty) {
+        print('没有找到历史消息，添加欢迎消息');
+        types.Message aiGreetingMessage = types.TextMessage(
+          author: _aiUser,
+          id: const Uuid().v4(),
+          createdAt: DateTime.now().millisecondsSinceEpoch,
+          text: AppLocalizations.of(context)!.aiGreeting,
+        );
+        loadedMessages.add(aiGreetingMessage);
+        
+        try {
+          await _saveMessageToFirestore(aiGreetingMessage);
+        } catch (e) {
+          print('保存欢迎消息失败: $e');
+          // 继续执行，不影响用户体验
+        }
+      }
+
+      setState(() {
+        _messages = loadedMessages;
+      });
+      print('消息加载完成');
+    } catch (e) {
+      print('加载消息时出错: $e');
+      // 如果加载失败，至少显示一个欢迎消息
+      setState(() {
+        _messages = [
+          types.TextMessage(
+            author: _aiUser,
+            id: const Uuid().v4(),
+            createdAt: DateTime.now().millisecondsSinceEpoch,
+            text: AppLocalizations.of(context)!.aiGreeting,
+          )
+        ];
+      });
     }
-
-    setState(() {
-      _messages = loadedMessages;
-    });
   }
 
   @override
@@ -338,27 +430,13 @@ class _ChatPageState extends State<ChatPage> {
       flexibleSpace: Container(
       ),
       centerTitle: true,
-      title: Text(
-        'AI Nutrition Assistant',
-        style: TextStyle(
-          fontSize: 22.0,
-          fontWeight: FontWeight.bold,
-          fontFamily: 'Roboto',
-        ),
-      ),
-      leading: Icon(Icons.health_and_safety),
+      title: Text(AppLocalizations.of(context)!.chatPageTitle),
+      leading: const Icon(Icons.health_and_safety),
       elevation: 8,
     ),
     body: Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/background_image.jpg'),
-          fit: BoxFit.cover,
-          colorFilter: ColorFilter.mode(
-            Colors.white.withOpacity(0.7),
-            BlendMode.lighten,
-          ),
-        ),
+      decoration: const BoxDecoration(
+        color: Colors.white,
       ),
       child: Chat(
         messages: _messages,
@@ -373,15 +451,15 @@ class _ChatPageState extends State<ChatPage> {
           backgroundColor: Colors.transparent,
           primaryColor: Colors.green,
           // secondaryColor: Colors.purple[100]!,
-          userAvatarNameColors: [Colors.green, Colors.green, Colors.orange],
+          userAvatarNameColors: const [Colors.green, Colors.green, Colors.orange],
           inputBackgroundColor: Colors.grey[200]!,
           inputTextColor: Colors.black87,
           inputTextCursorColor: Colors.green,
           messageBorderRadius: 20,
-          sendButtonIcon: Icon(Icons.send, color: Colors.green),
-          deliveredIcon: Icon(Icons.check_circle, color: Colors.green),
+          sendButtonIcon: const Icon(Icons.send, color: Colors.green),
+          deliveredIcon: const Icon(Icons.check_circle, color: Colors.green),
           errorColor: Colors.redAccent,
-          seenIcon: Icon(Icons.remove_red_eye, color: Colors.greenAccent),
+          seenIcon: const Icon(Icons.remove_red_eye, color: Colors.greenAccent),
         ),
       ),
     ),

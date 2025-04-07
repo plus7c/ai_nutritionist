@@ -1,1 +1,30 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"nutritionbot-93fa2","appId":"1:897369157103:android:d67cc75f2f2b555efa9a1a","fileOutput":"android/app/google-services.json"}},"ios":{"default":{"projectId":"nutritionbot-93fa2","appId":"1:897369157103:ios:2f05b28b410aa441fa9a1a","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"nutritionbot-93fa2","configurations":{"android":"1:897369157103:android:d67cc75f2f2b555efa9a1a","ios":"1:897369157103:ios:2f05b28b410aa441fa9a1a"}}}}}}
+{
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "nutrai-personal",
+                    "appId": "1:375616503764:android:595d93f5977aef49e5a041",
+                    "fileOutput": "android/app/google-services.json"
+                }
+            },
+            "ios": {
+                "default": {
+                    "projectId": "nutrai-personal",
+                    "appId": "1:375616503764:ios:d8db16b301f3bcd2e5a041",
+                    "uploadDebugSymbols": false,
+                    "fileOutput": "ios/Runner/GoogleService-Info.plist"
+                }
+            },
+            "dart": {
+                "lib/firebase_options.dart": {
+                    "projectId": "nutrai-personal",
+                    "configurations": {
+                        "android": "1:375616503764:android:595d93f5977aef49e5a041",
+                        "ios": "1:375616503764:ios:d8db16b301f3bcd2e5a041"
+                    }
+                }
+            }
+        }
+    }
+}

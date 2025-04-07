@@ -17,10 +17,11 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      // throw UnsupportedError(
+      //   'DefaultFirebaseOptions have not been configured for web - '
+      //   'you can reconfigure this by running the FlutterFire CLI again.',
+      // );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -49,23 +50,29 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+      apiKey: "AIzaSyBUGYT15vAjkCMrc1n7Te-uk3MyLQPWSKQ",
+      authDomain: "nutrai-personal.firebaseapp.com",
+      projectId: "nutrai-personal",
+      storageBucket: "nutrai-personal.firebasestorage.app",
+      messagingSenderId: "375616503764",
+      appId: "1:375616503764:web:d951f72f253d91fce5a041",
+      measurementId: "G-GG6YK800S2");
+
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCvySFYTz2hEZ2FzbUx_XqUi-qWKMulC2s',
-    appId: '1:897369157103:android:d67cc75f2f2b555efa9a1a',
-    messagingSenderId: '897369157103',
-    projectId: 'nutritionbot-93fa2',
-    storageBucket: 'nutritionbot-93fa2.appspot.com',
+    apiKey: 'AIzaSyAQrnTvLOex_WAHDCccIm4xuymltRhXWcg',
+    appId: '1:375616503764:android:595d93f5977aef49e5a041',
+    messagingSenderId: '375616503764',
+    projectId: 'nutrai-personal',
+    storageBucket: 'nutrai-personal.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBOivfteup__nc0lPE_oJ_KLfjVmnGUYXY',
-    appId: '1:897369157103:ios:2f05b28b410aa441fa9a1a',
-    messagingSenderId: '897369157103',
-    projectId: 'nutritionbot-93fa2',
-    storageBucket: 'nutritionbot-93fa2.appspot.com',
-    androidClientId: '897369157103-spk7jovn9lks2v3npfsbo6bmiahvf6sh.apps.googleusercontent.com',
-    iosClientId: '897369157103-d9m8ljus24lcph69b09h6n5s9qkrrvf3.apps.googleusercontent.com',
+    apiKey: 'AIzaSyDsaAYqO09EWbsrlya1R2CPuGsqK5_d2BQ',
+    appId: '1:375616503764:ios:d8db16b301f3bcd2e5a041',
+    messagingSenderId: '375616503764',
+    projectId: 'nutrai-personal',
+    storageBucket: 'nutrai-personal.firebasestorage.app',
     iosBundleId: 'com.example.pizzaOrderingApp',
   );
-
 }

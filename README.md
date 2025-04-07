@@ -1,9 +1,9 @@
-# NutrAI - AI-Powered Nutrition Assistant and Meal Logging
+# nutrai - AI-Powered Nutrition Assistant and Meal Logging
 
 NutriAI is an advanced mobile application that leverages artificial intelligence to provide personalized nutrition guidance. This app offers tailored meal plans, real-time nutritional advice, intelligent meal tracking, and an AI chatbot assistant. Supporting various diets and health conditions, NutriAI gamifies the nutrition journey and fosters a supportive community. It's your pocket nutritionist, combining cutting-edge AI technology with nutritional science to help users achieve their health and wellness goals.
 
 ## App Screenshots
-![App Features](https://github.com/Bhaulik/NutrAI/blob/master/architecture/NutrAI%20features.png)
+![App Features](https://github.com/Bhaulik/nutrai/blob/master/architecture/nutrai%20features.png)
 
 ## Key Features:
 
@@ -50,16 +50,16 @@ NutriAI is an advanced mobile application that leverages artificial intelligence
 
 ## Installation
 
-To install and run NutrAI, follow these steps:
+To install and run nutrai, follow these steps:
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/Bhaulik/NutrAI/
+    git clone https://github.com/Bhaulik/nutrai/
     ```
 
 2. Navigate to the project directory:
     ```bash
-    cd NutrAI
+    cd nutrai
     ```
 
 3. Install the necessary dependencies:

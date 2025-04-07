@@ -1,0 +1,198 @@
+{
+  "appTitle": "营养AI",
+  "welcomeMessage": "欢迎使用营养AI",
+  "chatPageTitle": "AI营养助手",
+  "aiGreeting": "你好！我是你的AI营养助手。准备好开始你的健康之旅了吗？有什么可以帮到你的？😊",
+  "userProfileTitle": "用户资料",
+  "saveProfile": "保存资料",
+  "addButtonText": "添加",
+  "skipButtonText": "跳过",
+  "doneButtonText": "完成",
+  "homeScreenTitle": "主页",
+  "welcomeToApp": "欢迎使用应用！",
+  "quickAddTitle": "快速添加",
+  "mealText": "餐食",
+  "goPremiumText": "升级高级版",
+  "noWeightDataText": "暂无体重数据",
+  "failedToDeleteMealText": "删除餐食项目失败。请重试。",
+  "deleteMealItemTitle": "删除餐食项目",
+  "deleteMealItemConfirmation": "确定要删除这个餐食项目吗？",
+  "cancelButtonText": "取消",
+  "deleteButtonText": "删除",
+  "logFoodText": "记录食物",
+  "swipeToDeleteText": "左滑删除记录",
+  "totalCaloriesText": "总卡路里：{calories} 千卡",
+  "@totalCaloriesText": {
+    "placeholders": {
+      "calories": {
+        "type": "String"
+      }
+    }
+  },
+  "userDataSavedText": "用户数据保存成功！",
+  "errorSavingUserDataText": "保存用户数据出错：{error}",
+  "noUserSignedInText": "您尚未登录。请先登录。",
+  "unexpectedErrorText": "发生意外错误：{error}",
+  "errorGeneratingResponseText": "生成回复时出错。请稍后再试。",
+  "responseGenerationFailedText": "抱歉，我无法生成回复。请重试。",
+  "photoButtonText": "照片",
+  "fileButtonText": "文件",
+  "languageSettingsTitle": "语言设置",
+  "selectLanguageText": "选择您偏好的语言",
+  "languageOptionText": "语言",
+  "profileOptionsTitle": "个人资料选项",
+  "greetingText": "你好！",
+  "signOutButtonText": "退出登录",
+  "confirmSignOutTitle": "确认退出登录",
+  "signOutConfirmationText": "您确定要退出登录吗？",
+  "signOutConfirmationSubtext": "退出后需要重新登录才能访问您的账户。",
+  "editProfileTitle": "编辑个人资料",
+  "editProfileSubtitle": "配置您的身高、体重、年龄、过敏原和目标",
+  "privacyPolicyTitle": "隐私政策",
+  "privacyPolicySubtitle": "您可以在这里删除或导出您的数据",
+  "errorSigningOutText": "退出登录出错。请重试。",
+  "nameLabel": "姓名",
+  "genderLabel": "性别",
+  "maleText": "男",
+  "femaleText": "女",
+  "otherText": "其他",
+  "dateOfBirthLabel": "出生日期",
+  "selectDateText": "选择日期",
+  "weightLabel": "体重（公斤）",
+  "heightLabel": "身高",
+  "cmText": "厘米",
+  "ftText": "英尺",
+  "inText": "英寸",
+  "allergiesLabel": "过敏原",
+  "goalsLabel": "目标",
+  "weightLossGoal": "减肥",
+  "allergiesGoal": "过敏和食物敏感",
+  "mealPlanningGoal": "膳食规划",
+  "nutritionGoalsGoal": "设定个人营养目标",
+  "eatingHabitsGoal": "改善饮食习惯",
+  "chronicDiseasesGoal": "慢性疾病",
+  "digestiveIssuesGoal": "消化问题",
+  "otherGoal": "其他",
+  "saveButtonText": "保存",
+  "enterHeightText": "请输入您的身高（英尺和英寸）。",
+  "enterNewText": "输入新的",
+  "languageChangedText": "语言已成功更改",
+  "foodLoggerPageTitle": "上传或拍照",
+  "foodLoggerPageDescription": "您可以上传或拍照了解您面前的食物或上传照片",
+  "detectAllergensOption": "检测过敏原 🥜",
+  "nutrientInfoOption": "详细营养信息 🥦",
+  "learnAboutFoodOption": "了解食物 🍎",
+  "funFactsOption": "食物趣闻 🌮",
+  "generateDishOption": "生成菜品 🍳",
+  "capturePhotoAction": "拍照",
+  "uploadImageAction": "上传图片",
+  "actionForOption": "{option}的{action}",
+  "noImageSelected": "未选择图片，请重试。",
+  "failedToPickImage": "选择图片失败：{error}",
+  "resultDisclaimer": "注意：结果可能不准确。请始终与专业人士核实。",
+  
+  "dailyStatsPageTitle": "每日统计",
+  "dailyCaloriesLabel": "每日卡路里",
+  "eatenLabel": "已摄入",
+  "caloriesAvailableText": "还可摄入 {calories} 千卡",
+  "bmiTitle": "体质指数",
+  "bmiValue": "您的体质指数：{value}",
+  "underweightText": "体重过轻",
+  "normalWeightText": "正常",
+  "overweightText": "超重",
+  "obeseText": "肥胖",
+  "nutrientsSectionTitle": "营养素",
+  "proteinLabel": "蛋白质",
+  "fatsLabel": "脂肪",
+  "carbsLabel": "碳水化合物",
+  "gramSuffix": "克",
+  "geminiRecommendation": "Gemini 建议",
+  
+  "caloriesRemainingPageTitle": "卡路里剩余",
+  "caloriesRemainingText": "今天您还可以摄入 {calories} 千卡",
+  "logFoodButton": "记录食物",
+  "deleteEntrySwipeHint": "向左滑动删除记录条目",
+  "noMealsLoggedMessage": "这一天没有记录任何餐食...",
+  "caloriesUnitText": "{calories} 千卡",
+  "@caloriesUnitText": {
+    "placeholders": {
+      "calories": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteMealItemTitle": "删除餐食项目",
+  "deleteMealItemConfirmation": "您确定要删除这个餐食项目吗？",
+  "cancelButton": "取消",
+  "deleteButton": "删除",
+  "failedToDeleteMealItem": "删除餐食项目失败，请重试。",
+  
+  "addMealLogPageTitle": "添加餐食记录",
+  "logDateLabel": "记录日期",
+  "mealTypeLabel": "餐食类型",
+  "mealItemNameLabel": "餐食名称",
+  "caloriesLabel": "卡路里",
+  "carbsLabel": "碳水化合物 (克)",
+  "fatsLabel": "脂肪 (克)",
+  "proteinLabel": "蛋白质 (克)",
+  "servingSizeLabel": "份量 (克)",
+  "takePhotoButton": "拍照",
+  "addMealItemButton": "添加餐食",
+  "saveMealLogButton": "保存餐食记录",
+  "mealItemsLabel": "餐食项目：",
+  "caloriesValueText": "卡路里：{calories} 千卡",
+  "@caloriesValueText": {
+    "placeholders": {
+      "calories": {
+        "type": "int"
+      }
+    }
+  },
+  "macroNutrientsText": "碳水：{carbs}克 | 脂肪：{fats}克 | 蛋白质：{protein}克",
+  "@macroNutrientsText": {
+    "placeholders": {
+      "carbs": {
+        "type": "double"
+      },
+      "fats": {
+        "type": "double"
+      },
+      "protein": {
+        "type": "double"
+      }
+    }
+  },
+  "servingSizeValueText": "份量：{servingSize}克",
+  "@servingSizeValueText": {
+    "placeholders": {
+      "servingSize": {
+        "type": "double"
+      }
+    }
+  },
+  "addMealItemValidationError": "请输入餐食名称",
+  "addCaloriesValidationError": "请输入卡路里",
+  "addMealLogValidationError": "请至少添加一个餐食项目并指定餐食类型。",
+  "loginRequiredError": "您必须登录才能保存餐食记录。请登录后重试。",
+  "mealLogAddedSuccess": "餐食记录添加成功！",
+  "mealLogSaveError": "保存餐食记录出错：{error}",
+  "@mealLogSaveError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "unexpectedError": "发生意外错误：{error}",
+  "@unexpectedError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "breakfastMealType": "早餐",
+  "lunchMealType": "午餐",
+  "dinnerMealType": "晚餐",
+  "snackMealType": "零食"
+}

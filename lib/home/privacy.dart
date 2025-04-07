@@ -6,6 +6,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../onboarding/userstatsonboarding.dart';
 
 class DeleteAccountPage extends StatefulWidget {
+  const DeleteAccountPage({super.key});
+
   @override
   _DeleteAccountPageState createState() => _DeleteAccountPageState();
 }
@@ -19,7 +21,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
   Future<void> _deleteUserData() async {
     if (!_termsAccepted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please accept the terms before deleting your account.')),
+        const SnackBar(content: Text('Please accept the terms before deleting your account.')),
       );
       return;
     }
@@ -48,7 +50,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => UserStatsOnboarding()),
+          MaterialPageRoute(builder: (context) => const UserStatsOnboarding()),
         );// Redirect to login page
       }
     } catch (e) {
@@ -64,40 +66,40 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Delete Account'),
+        title: const Text('Delete Account'),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Delete Account and Data',
-              style: Theme.of(context).textTheme.headline5,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
-            SizedBox(height: 16),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               'Warning: This action is irreversible. All your data will be permanently deleted.',
               style: TextStyle(color: Colors.red),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             Text(
               'Terms and Conditions:',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
-            SizedBox(height: 8),
-            Text(
+            const SizedBox(height: 8),
+            const Text(
               '1. By deleting your account, you acknowledge that all your personal data, including but not limited to profile information, meal logs, and progress data, will be permanently removed from our servers.\n\n'
                   '2. We may retain certain information as required by law or for legitimate business purposes.\n\n'
                   '3. You will lose access to all features and services associated with your account.\n\n'
                   '4. Any active subscriptions will be cancelled, and you may not be eligible for refunds on any paid services.\n\n'
                   '5. If you choose to use our services again in the future, you will need to create a new account.',
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             CheckboxListTile(
-              title: Text('I have read and accept the terms and conditions'),
+              title: const Text('I have read and accept the terms and conditions'),
               value: _termsAccepted,
               onChanged: (bool? value) {
                 setState(() {
@@ -105,7 +107,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                 });
               },
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             Center(
               child: ElevatedButton(
                 onPressed: () async {
@@ -114,9 +116,9 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 ),
-                child: Text('Delete My Account'),
+                child: const Text('Delete My Account'),
               ),
             ),
           ],
@@ -158,15 +160,15 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirm Account Deletion'),
-          content: Text('You will need to re-authenticate with Google to delete your account. Are you sure you want to proceed?'),
+          title: const Text('Confirm Account Deletion'),
+          content: const Text('You will need to re-authenticate with Google to delete your account. Are you sure you want to proceed?'),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () => Navigator.of(context).pop(false),
             ),
             TextButton(
-              child: Text('Yes, Delete My Account'),
+              child: const Text('Yes, Delete My Account'),
               onPressed: () => Navigator.of(context).pop(true),
             ),
           ],
@@ -175,5 +177,3 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
     ) ?? false;
   }
 }
-
-

@@ -7,15 +7,17 @@ import '../photologger/foodloggerpage.dart';
 import '../stats/stats_page.dart';
 
 class AppTemplate extends StatefulWidget {
+  const AppTemplate({super.key});
+
   @override
   _AppTemplateState createState() => _AppTemplateState();
 }
 
 class _AppTemplateState extends State<AppTemplate> {
   int _selectedIndex = 0;
-  static List<Widget> _widgetOptions = <Widget>[
+  static final List<Widget> _widgetOptions = <Widget>[
     MainHome(),
-    ChatPage(),
+    const ChatPage(),
     FoodLoggerPage(),
     StatsPage(),
     MealPage2(),
@@ -59,8 +61,8 @@ class CurvedNavigationBar extends StatefulWidget {
   final ValueChanged<int> onTap;
   final double height;
 
-  CurvedNavigationBar({
-    Key? key,
+  const CurvedNavigationBar({
+    super.key,
     required this.items,
     this.index = 0,
     this.color = Colors.white,
@@ -68,7 +70,7 @@ class CurvedNavigationBar extends StatefulWidget {
     this.backgroundColor = Colors.blueAccent,
     required this.onTap,
     this.height = 75.0,
-  }) : super(key: key);
+  });
 
   @override
   _CurvedNavigationBarState createState() => _CurvedNavigationBarState();
@@ -82,7 +84,7 @@ class _CurvedNavigationBarState extends State<CurvedNavigationBar> with SingleTi
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    _animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
     _animation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeOut,
@@ -129,7 +131,7 @@ class _CurvedNavigationBarState extends State<CurvedNavigationBar> with SingleTi
                       child: child,
                     );
                   },
-                  child: Container(
+                  child: SizedBox(
                     width: 60,
                     height: 60,
                     child: Center(child: item),

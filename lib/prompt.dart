@@ -61,15 +61,13 @@ User Health Data:
     }
 
     // Construct the full prompt
-    String fullPrompt = systemPrompt + "\n\n";
+    String fullPrompt = "$systemPrompt\n\n";
 
     // Add user health data if available
-    if (userHealthData == null) {
-      userHealthData = await fetchUserHealthData();
-    }
+    userHealthData ??= await fetchUserHealthData();
     fullPrompt += userHealthData ?? '';
 
-    fullPrompt += conversationHistory.join("\n") + "\nNutritionist:";
+    fullPrompt += "${conversationHistory.join("\n")}\nNutritionist:";
 
     return fullPrompt;
   }

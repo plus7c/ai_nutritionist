@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../firestore_helper.dart';
 import 'bmi.dart';
@@ -10,6 +11,8 @@ import 'nutrients_section.dart';
 import 'variables.dart';
 
 class StatsPage extends StatefulWidget {
+  const StatsPage({super.key});
+
   @override
   _StatsPageState createState() => _StatsPageState();
 }
@@ -120,20 +123,20 @@ class _StatsPageState extends State<StatsPage> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Daily Stats',
-          style: TextStyle(
+          AppLocalizations.of(context)!.dailyStatsPageTitle,
+          style: const TextStyle(
             fontSize: 22.0,
             fontWeight: FontWeight.bold,
             fontFamily: 'Roboto',
           ),
         ),
-        leading: Icon(Icons.query_stats_sharp),
+        leading: const Icon(Icons.query_stats_sharp),
         backgroundColor: Colors.white,
         elevation: 1,
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -144,13 +147,13 @@ class _StatsPageState extends State<StatsPage> {
                 selectedDate: _selectedDate,
                 onPressed: () => _selectDate(context),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               DailyStats(totalCaloriesEaten: _totalCaloriesEaten),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               BMICard(bmi: _bmi),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               // WeightStatistics(weightData: _weightData),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               NutrientsSection(protein: _totalProtein, fats: _totalFats, carbs: _totalCarbs)
             ],
           ),
@@ -163,7 +166,7 @@ class _StatsPageState extends State<StatsPage> {
 class DailyStats extends StatelessWidget {
   final int totalCaloriesEaten;
 
-  const DailyStats({required this.totalCaloriesEaten});
+  const DailyStats({super.key, required this.totalCaloriesEaten});
 
   @override
   Widget build(BuildContext context) {
@@ -180,26 +183,26 @@ class DailyStats extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 StatItem(
-                  label: 'Daily calories',
+                  label: AppLocalizations.of(context)!.dailyCaloriesLabel,
                   value: '$calorieGoal',
                 ),
                 CircularProgressIndicator(
                   value: totalCaloriesEaten / 2181,
                   strokeWidth: 8,
                   backgroundColor: Colors.grey[200],
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
                 ),
                 StatItem(
-                  label: 'Eaten',
+                  label: AppLocalizations.of(context)!.eatenLabel,
                   value: '$totalCaloriesEaten',
                 ),
               ],
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Center(
               child: Text(
-                '${2181 - totalCaloriesEaten} Kcal available',
-                style: TextStyle(
+                AppLocalizations.of(context)!.caloriesAvailableText(2181 - totalCaloriesEaten),
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.blue,
@@ -217,7 +220,7 @@ class StatItem extends StatelessWidget {
   final String label;
   final String value;
 
-  const StatItem({required this.label, required this.value});
+  const StatItem({super.key, required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -225,12 +228,12 @@ class StatItem extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 14, color: Colors.grey),
+          style: const TextStyle(fontSize: 14, color: Colors.grey),
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         Text(
           value,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ],
     );

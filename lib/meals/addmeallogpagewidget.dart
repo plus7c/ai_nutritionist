@@ -7,27 +7,31 @@ import 'dart:typed_data';
 import 'dart:convert';
 // ignore: unused_import
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+
 import 'package:firebase_vertexai/firebase_vertexai.dart';
 import 'package:uuid/uuid.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'LoggedMeal.dart';
 
 class AddMealLogPage extends StatefulWidget {
   final GenerativeModel model;
   final Function addMealToLog;
-  const AddMealLogPage({Key? key, required this.model, required this.addMealToLog}) : super(key: key);
+  const AddMealLogPage({super.key, required this.model, required this.addMealToLog});
 
   @override
   _AddMealLogPageState createState() => _AddMealLogPageState();
 }
 
 class _AddMealLogPageState extends State<AddMealLogPage> {
-  final _formKey = GlobalKey<FormState>();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final ImagePicker _picker = ImagePicker();
+  
   DateTime _selectedDate = DateTime.now();
-  String _mealTypeName = 'Breakfast';
-  final List<MealItem> _mealItems = [];
+  String _mealTypeName = ''; 
+  List<MealItem> _mealItems = [];
+  bool _isLoading = false;
 
   final TextEditingController _mealItemNameController = TextEditingController();
   final TextEditingController _caloriesController = TextEditingController();
@@ -36,14 +40,43 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
   final TextEditingController _proteinController = TextEditingController();
   final TextEditingController _servingSizeController = TextEditingController();
 
-  final ImagePicker _picker = ImagePicker();
-  bool _isLoading = false;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        _mealTypeName = AppLocalizations.of(context)!.breakfastMealType;
+      });
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final currentLocale = AppLocalizations.of(context);
+    if (currentLocale != null) {
+      final bool isBreakfast = _mealTypeName == AppLocalizations.of(context)!.breakfastMealType;
+      final bool isLunch = _mealTypeName == AppLocalizations.of(context)!.lunchMealType;
+      final bool isDinner = _mealTypeName == AppLocalizations.of(context)!.dinnerMealType;
+      final bool isSnack = _mealTypeName == AppLocalizations.of(context)!.snackMealType;
+      
+      if (isBreakfast || _mealTypeName.isEmpty) {
+        _mealTypeName = currentLocale.breakfastMealType;
+      } else if (isLunch) {
+        _mealTypeName = currentLocale.lunchMealType;
+      } else if (isDinner) {
+        _mealTypeName = currentLocale.dinnerMealType;
+      } else if (isSnack) {
+        _mealTypeName = currentLocale.snackMealType;
+      }
+    }
+  }
 
   void _addMealItem() {
     if (_mealItemNameController.text.isNotEmpty && _caloriesController.text.isNotEmpty) {
       setState(() {
         _mealItems.add(MealItem(
-          id: Uuid().v4(), // Generate a unique ID
+          id: const Uuid().v4(), 
           mealItemName: _mealItemNameController.text,
           calories: int.parse(_caloriesController.text),
           carbs: _carbsController.text.isNotEmpty ? double.parse(_carbsController.text) : 0.0,
@@ -62,54 +95,126 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
   }
 
   Future<void> _storeMealLog() async {
-    if (_mealItems.isEmpty || _mealTypeName.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please add at least one meal item and specify a meal type.')),
-      );
-      return;
-    }
-
-    String userId = _auth.currentUser!.uid;
-    MealType newMealType = MealType(mealTypeName: _mealTypeName, mealItems: _mealItems);
-
-    DateTime startOfDay = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, 0, 0, 0);
-    DateTime endOfDay = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, 23, 59, 59);
-
-    CollectionReference loggedMealsRef = _firestore.collection('users').doc(userId).collection('loggedmeals');
-
-    QuerySnapshot existingLogs = await loggedMealsRef
-        .where('timeOfLogging', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
-        .where('timeOfLogging', isLessThanOrEqualTo: Timestamp.fromDate(endOfDay))
-        .get();
-
-    if (existingLogs.docs.isNotEmpty) {
-      String docId = existingLogs.docs.first.id;
-      Map<String, dynamic> existingLogData = existingLogs.docs.first.data() as Map<String, dynamic>;
-      LoggedMeal existingLoggedMeal = LoggedMeal.fromMap(existingLogData);
-
-      // Check if meal type already exists and add new items to it
-      int mealTypeIndex = existingLoggedMeal.mealTypes.indexWhere((mealType) => mealType.mealTypeName == newMealType.mealTypeName);
-      if (mealTypeIndex != -1) {
-        existingLoggedMeal.mealTypes[mealTypeIndex].mealItems.addAll(newMealType.mealItems);
-      } else {
-        existingLoggedMeal.mealTypes.add(newMealType);
+    try {
+      if (_mealItems.isEmpty || _mealTypeName.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.addMealLogValidationError)),
+        );
+        return;
       }
 
-      widget.addMealToLog(existingLoggedMeal);
-      await loggedMealsRef.doc(docId).update(existingLoggedMeal.toMap());
-    } else {
-      LoggedMeal newLoggedMeal = LoggedMeal(timeOfLogging: _selectedDate, mealTypes: [newMealType]);
-      await loggedMealsRef.add(newLoggedMeal.toMap());
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.loginRequiredError)),
+        );
+        return;
+      }
+
+      try {
+        print('开始保存 meal log');
+        print('用户ID: ${_auth.currentUser?.uid}');
+        print('选择的日期: $_selectedDate');
+        print('餐食类型: $_mealTypeName');
+        print('餐食项目数量: ${_mealItems.length}');
+        
+        String? userId = _auth.currentUser?.uid;
+        if (userId == null) {
+          print('错误: 用户未登录');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(AppLocalizations.of(context)!.loginRequiredError)),
+          );
+          return;
+        }
+        
+        MealType newMealType = MealType(mealTypeName: _mealTypeName, mealItems: _mealItems);
+        print('新建 MealType: ${newMealType.mealTypeName}, 总卡路里: ${newMealType.totalCalories}');
+
+        DateTime startOfDay = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, 0, 0, 0);
+        DateTime endOfDay = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, 23, 59, 59);
+
+        CollectionReference loggedMealsRef = _firestore.collection('users').doc(userId).collection('loggedmeals');
+        print('Firestore 路径: users/$userId/loggedmeals');
+
+        try {
+          print('查询当天已有的 meal logs');
+          QuerySnapshot existingLogs = await loggedMealsRef
+              .where('timeOfLogging', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+              .where('timeOfLogging', isLessThanOrEqualTo: Timestamp.fromDate(endOfDay))
+              .get();
+          
+          print('查询结果: ${existingLogs.docs.length} 条记录');
+
+          if (existingLogs.docs.isNotEmpty) {
+            print('找到已有记录，更新现有记录');
+            String docId = existingLogs.docs.first.id;
+            print('文档ID: $docId');
+            
+            Map<String, dynamic> existingLogData = existingLogs.docs.first.data() as Map<String, dynamic>;
+            print('现有数据: $existingLogData');
+            
+            LoggedMeal existingLoggedMeal = LoggedMeal.fromMap(existingLogData);
+            print('转换为 LoggedMeal 对象成功');
+
+            int mealTypeIndex = existingLoggedMeal.mealTypes.indexWhere((mealType) => mealType.mealTypeName == newMealType.mealTypeName);
+            if (mealTypeIndex != -1) {
+              print('更新现有餐食类型: ${newMealType.mealTypeName}');
+              existingLoggedMeal.mealTypes[mealTypeIndex].mealItems.addAll(newMealType.mealItems);
+            } else {
+              print('添加新餐食类型: ${newMealType.mealTypeName}');
+              existingLoggedMeal.mealTypes.add(newMealType);
+            }
+
+            widget.addMealToLog(existingLoggedMeal);
+            
+            Map<String, dynamic> updatedData = existingLoggedMeal.toMap();
+            print('更新数据: $updatedData');
+            
+            await loggedMealsRef.doc(docId).update(updatedData);
+            print('更新成功');
+          } else {
+            print('没有找到现有记录，创建新记录');
+            LoggedMeal newLoggedMeal = LoggedMeal(timeOfLogging: _selectedDate, mealTypes: [newMealType]);
+            
+            Map<String, dynamic> newData = newLoggedMeal.toMap();
+            print('新数据: $newData');
+            
+            DocumentReference docRef = await loggedMealsRef.add(newData);
+            print('创建成功，新文档ID: ${docRef.id}');
+            
+            widget.addMealToLog(newLoggedMeal);
+          }
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(AppLocalizations.of(context)!.mealLogAddedSuccess)),
+          );
+
+          setState(() {
+            _mealTypeName = AppLocalizations.of(context)!.breakfastMealType;
+            _mealItems.clear();
+          });
+        } catch (e) {
+          print('Firestore 操作错误: $e');
+          if (e is FirebaseException) {
+            print('Firebase 错误代码: ${e.code}');
+            print('Firebase 错误消息: ${e.message}');
+          }
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(AppLocalizations.of(context)!.mealLogSaveError(e.toString()))),
+          );
+        }
+      } catch (e) {
+        print('一般错误: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.unexpectedError(e.toString()))),
+        );
+      }
+    } catch (e) {
+      print('一般错误: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.unexpectedError(e.toString()))),
+      );
     }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Meal log added successfully!')),
-    );
-
-    setState(() {
-      _mealTypeName = 'Breakfast';
-      _mealItems.clear();
-    });
   }
 
   Future<void> _getImage(ImageSource source) async {
@@ -142,7 +247,7 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
   }
 
   Future<NutritionInfo> _generateNutritionInfo(Uint8List imageBytes) async {
-    final prompt = '''
+    const prompt = '''
   Analyze this food image and provide the following information:
   1. Name of the dish
   2. Estimated calorie content
@@ -172,13 +277,10 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
 
       String jsonString = response.text ?? '{}';
 
-      // Remove any markdown code block indicators
       jsonString = jsonString.replaceAll('```json', '').replaceAll('```', '');
 
-      // Trim any leading or trailing whitespace
       jsonString = jsonString.trim();
 
-      // Parse the JSON response
       final jsonResponse = json.decode(jsonString);
       return NutritionInfo.fromJson(jsonResponse);
     } catch (e) {
@@ -192,12 +294,12 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Add Meal Log'),
+        title: Text(AppLocalizations.of(context)!.addMealLogPageTitle),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
@@ -218,7 +320,7 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
                     }
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
                       color: Colors.black,
                       borderRadius: BorderRadius.circular(8),
@@ -227,7 +329,7 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
                           color: Colors.grey.withOpacity(0.5),
                           spreadRadius: 2,
                           blurRadius: 5,
-                          offset: Offset(0, 3),
+                          offset: const Offset(0, 3),
                         ),
                       ],
                     ),
@@ -235,105 +337,118 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Log Date',
-                          style: TextStyle(fontSize: 18, color: Colors.white),
+                          AppLocalizations.of(context)!.logDateLabel,
+                          style: const TextStyle(fontSize: 18, color: Colors.white),
                         ),
-                        SizedBox(width: 8),
-                        Icon(Icons.calendar_today, color: Colors.white),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
+                        const Icon(Icons.calendar_today, color: Colors.white),
+                        const SizedBox(width: 8),
                         Text(
                           DateFormat('MMM d, yyyy').format(_selectedDate),
-                          style: TextStyle(fontSize: 18, color: Colors.white),
+                          style: const TextStyle(fontSize: 18, color: Colors.white),
                         ),
                       ],
                     ),
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  value: _mealTypeName,
+                  value: _mealTypeName.isEmpty ? null : _mealTypeName,
                   decoration: InputDecoration(
-                    labelText: 'Meal Type',
-                    border: OutlineInputBorder(),
+                    labelText: AppLocalizations.of(context)!.mealTypeLabel,
+                    border: const OutlineInputBorder(),
                   ),
-                  items: ['Breakfast', 'Lunch', 'Dinner', 'Snack']
+                  items: [
+                    AppLocalizations.of(context)!.breakfastMealType,
+                    AppLocalizations.of(context)!.lunchMealType,
+                    AppLocalizations.of(context)!.dinnerMealType,
+                    AppLocalizations.of(context)!.snackMealType
+                  ]
                       .map((label) => DropdownMenuItem(
-                    child: Text(label),
                     value: label,
+                    child: Text(label),
                   ))
                       .toList(),
                   onChanged: (value) {
-                    setState(() {
-                      _mealTypeName = value!;
-                    });
+                    if (value != null) {
+                      setState(() {
+                        _mealTypeName = value;
+                      });
+                    }
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return AppLocalizations.of(context)!.addMealItemValidationError;
+                    }
+                    return null;
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _mealItemNameController,
                   decoration: InputDecoration(
-                    labelText: 'Meal Item Name',
-                    border: OutlineInputBorder(),
+                    labelText: AppLocalizations.of(context)!.mealItemNameLabel,
+                    border: const OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter a meal item name';
+                      return AppLocalizations.of(context)!.addMealItemValidationError;
                     }
                     return null;
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _caloriesController,
                   decoration: InputDecoration(
-                    labelText: 'Calories',
-                    border: OutlineInputBorder(),
+                    labelText: AppLocalizations.of(context)!.caloriesLabel,
+                    border: const OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter calories';
+                      return AppLocalizations.of(context)!.addCaloriesValidationError;
                     }
                     return null;
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _carbsController,
                   decoration: InputDecoration(
-                    labelText: 'Carbs (g)',
-                    border: OutlineInputBorder(),
+                    labelText: AppLocalizations.of(context)!.carbsLabel,
+                    border: const OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.number,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _fatsController,
                   decoration: InputDecoration(
-                    labelText: 'Fats (g)',
-                    border: OutlineInputBorder(),
+                    labelText: AppLocalizations.of(context)!.fatsLabel,
+                    border: const OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.number,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _proteinController,
                   decoration: InputDecoration(
-                    labelText: 'Protein (g)',
-                    border: OutlineInputBorder(),
+                    labelText: AppLocalizations.of(context)!.proteinLabel,
+                    border: const OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.number,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _servingSizeController,
                   decoration: InputDecoration(
-                    labelText: 'Serving Size (g)',
-                    border: OutlineInputBorder(),
+                    labelText: AppLocalizations.of(context)!.servingSizeLabel,
+                    border: const OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.number,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -342,10 +457,10 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () => _getImage(ImageSource.camera),
-                            icon: Icon(Icons.camera_alt),
-                            label: Text('Take Photo'),
+                            icon: const Icon(Icons.camera_alt),
+                            label: Text(AppLocalizations.of(context)!.takePhotoButton),
                             style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(vertical: 12),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
                               backgroundColor: Colors.blue,
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
@@ -354,14 +469,14 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
                             ),
                           ),
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: _addMealItem,
-                            icon: Icon(Icons.add),
-                            label: Text('Add Meal Item'),
+                            icon: const Icon(Icons.add),
+                            label: Text(AppLocalizations.of(context)!.addMealItemButton),
                             style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(vertical: 12),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
                               backgroundColor: Colors.green,
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
@@ -372,34 +487,37 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     if (_mealItems.isNotEmpty) ...[
                       Text(
-                        'Meal Items:',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                        AppLocalizations.of(context)!.mealItemsLabel,
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       ..._mealItems.map((item) => Card(
                         elevation: 2,
-                        margin: EdgeInsets.only(bottom: 8),
+                        margin: const EdgeInsets.only(bottom: 8),
                         child: ListTile(
                           title: Text(
                             item.mealItemName,
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(height: 4),
-                              Text('Calories: ${item.calories} kcal'),
-                              Text('Carbs: ${item.carbs}g | Fats: ${item.fats}g | Protein: ${item.protein}g'),
-                              Text('Serving Size: ${item.servingSize}g'),
+                              const SizedBox(height: 4),
+                              Text(AppLocalizations.of(context)!.caloriesValueText(item.calories)),
+                              Text(AppLocalizations.of(context)!.macroNutrientsText(
+                                item.carbs.toDouble(), 
+                                item.fats.toDouble(), 
+                                item.protein.toDouble()
+                              )),
+                              Text(AppLocalizations.of(context)!.servingSizeValueText(item.servingSize.toDouble())),
                             ],
                           ),
                           trailing: IconButton(
-                            icon: Icon(Icons.delete, color: Colors.red),
+                            icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () {
-                              // Implement delete functionality
                               setState(() {
                                 _mealItems.remove(item);
                               });
@@ -407,16 +525,16 @@ class _AddMealLogPageState extends State<AddMealLogPage> {
                           ),
                         ),
                       )),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                     ],
                     ElevatedButton.icon(
                       onPressed: () {
                           _storeMealLog();
                       },
-                      icon: Icon(Icons.save),
-                      label: Text('Save Meal Log'),
+                      icon: const Icon(Icons.save),
+                      label: Text(AppLocalizations.of(context)!.saveMealLogButton),
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         backgroundColor: Colors.black,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(

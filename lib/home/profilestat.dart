@@ -5,7 +5,7 @@ class ProfileStat extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
 
-  const ProfileStat({required this.icon, required this.label, required this.onTap});
+  const ProfileStat({super.key, required this.icon, required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -14,10 +14,10 @@ class ProfileStat extends StatelessWidget {
       child: Column(
         children: [
           Icon(icon, size: 40),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
             label,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ],
       ),

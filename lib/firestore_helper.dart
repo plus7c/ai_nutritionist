@@ -184,7 +184,7 @@ Widget buildFoodJournalList(String userId) {
   return StreamBuilder<QuerySnapshot>(
     stream: _firestoreService.getFoodJournalEntries(userId),
     builder: (context, snapshot) {
-      if (!snapshot.hasData) return CircularProgressIndicator();
+      if (!snapshot.hasData) return const CircularProgressIndicator();
       return ListView(
         children: snapshot.data!.docs.map((doc) {
           Map<String, dynamic> entry = doc.data() as Map<String, dynamic>;

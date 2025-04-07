@@ -1,14 +1,15 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../gemini_engine/gemini_stats_section.dart';
+import '../gemini_engine/gemini_stats_section.dart' as tongyi;
 
 class NutrientsSection extends StatefulWidget {
   final double protein;
   final double fats;
   final double carbs;
 
-  const NutrientsSection({
+  const NutrientsSection({super.key, 
     required this.protein,
     required this.fats,
     required this.carbs,
@@ -38,9 +39,9 @@ class _NutrientsSectionState extends State<NutrientsSection> {
       _isLoading = true;
     });
 
-    // Call to Gemini to get the recommendation
-    // This is a mock function. Replace with actual API call to Gemini// Mocking network delay
-    String recommendation = await getGeminiRecommendationForStats(widget.protein, widget.fats, widget.carbs);
+    // 调用千问API获取建议
+    // 这里有模拟网络延迟
+    String recommendation = await tongyi.getNutritionRecommendation(widget.protein, widget.fats, widget.carbs);
 
     setState(() {
       _recommendation = recommendation;
@@ -61,15 +62,15 @@ class _NutrientsSectionState extends State<NutrientsSection> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Macro-Nutrient Breakdown',
-              style: TextStyle(
+              AppLocalizations.of(context)!.nutrientsSectionTitle,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.blue,
               ),
             ),
-            SizedBox(height: 20),
-            Container(
+            const SizedBox(height: 20),
+            SizedBox(
               height: 250,
               child: BarChart(
                 BarChartData(
@@ -84,13 +85,13 @@ class _NutrientsSectionState extends State<NutrientsSection> {
                         String nutrient;
                         switch (group.x.toInt()) {
                           case 0:
-                            nutrient = 'Protein';
+                            nutrient = AppLocalizations.of(context)!.proteinLabel;
                             break;
                           case 1:
-                            nutrient = 'Fats';
+                            nutrient = AppLocalizations.of(context)!.fatsLabel;
                             break;
                           case 2:
-                            nutrient = 'Carbs';
+                            nutrient = AppLocalizations.of(context)!.carbsLabel;
                             break;
                           default:
                             nutrient = '';
@@ -98,14 +99,14 @@ class _NutrientsSectionState extends State<NutrientsSection> {
                         }
                         return BarTooltipItem(
                           '$nutrient\n',
-                          TextStyle(
+                          const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
                           children: <TextSpan>[
                             TextSpan(
-                              text: '${rod.y.toString()}g',
-                              style: TextStyle(
+                              text: '${rod.toY.toString()}${AppLocalizations.of(context)!.gramSuffix}',
+                              style: const TextStyle(
                                 color: Colors.yellow,
                               ),
                             ),
@@ -115,41 +116,50 @@ class _NutrientsSectionState extends State<NutrientsSection> {
                     ),
                   ),
                   titlesData: FlTitlesData(
-                    leftTitles: SideTitles(
-                      showTitles: true,
-                      getTextStyles: (context, value) => TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) => Text(
+                          value % 10 == 0 ? value.toInt().toString() : '',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                        reservedSize: 40,
                       ),
-                      margin: 8,
-                      reservedSize: 40,
-                      getTitles: (value) {
-                        if (value % 10 == 0) {
-                          return value.toInt().toString();
-                        }
-                        return '';
-                      },
                     ),
-                    bottomTitles: SideTitles(
-                      showTitles: true,
-                      getTextStyles: (context, value) => TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          String text;
+                          switch (value.toInt()) {
+                            case 0:
+                              text = AppLocalizations.of(context)!.proteinLabel;
+                              break;
+                            case 1:
+                              text = AppLocalizations.of(context)!.fatsLabel;
+                              break;
+                            case 2:
+                              text = AppLocalizations.of(context)!.carbsLabel;
+                              break;
+                            default:
+                              text = '';
+                              break;
+                          }
+                          return Text(
+                            text,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          );
+                        },
+                        reservedSize: 40,
                       ),
-                      margin: 16,
-                      getTitles: (double value) {
-                        switch (value.toInt()) {
-                          case 0:
-                            return 'Protein';
-                          case 1:
-                            return 'Fats';
-                          case 2:
-                            return 'Carbs';
-                        }
-                        return '';
-                      },
                     ),
                   ),
                   borderData: FlBorderData(
@@ -164,8 +174,8 @@ class _NutrientsSectionState extends State<NutrientsSection> {
                       x: 0,
                       barRods: [
                         BarChartRodData(
-                          y: widget.protein,
-                          colors: [Colors.red],
+                          toY: widget.protein,
+                          color: Colors.red,
                           width: 20,
                         ),
                       ],
@@ -174,8 +184,8 @@ class _NutrientsSectionState extends State<NutrientsSection> {
                       x: 1,
                       barRods: [
                         BarChartRodData(
-                          y: widget.fats,
-                          colors: [Colors.green],
+                          toY: widget.fats,
+                          color: Colors.blue,
                           width: 20,
                         ),
                       ],
@@ -184,8 +194,8 @@ class _NutrientsSectionState extends State<NutrientsSection> {
                       x: 2,
                       barRods: [
                         BarChartRodData(
-                          y: widget.carbs,
-                          colors: [Colors.blue],
+                          toY: widget.carbs,
+                          color: Colors.green,
                           width: 20,
                         ),
                       ],
@@ -194,33 +204,33 @@ class _NutrientsSectionState extends State<NutrientsSection> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Legend(color: Colors.red, text: 'Protein (g)'),
-                Legend(color: Colors.green, text: 'Fats (g)'),
-                Legend(color: Colors.blue, text: 'Carbs (g)'),
+                Legend(color: Colors.red, text: '${AppLocalizations.of(context)!.proteinLabel} (${AppLocalizations.of(context)!.gramSuffix})'),
+                Legend(color: Colors.blue, text: '${AppLocalizations.of(context)!.fatsLabel} (${AppLocalizations.of(context)!.gramSuffix})'),
+                Legend(color: Colors.green, text: '${AppLocalizations.of(context)!.carbsLabel} (${AppLocalizations.of(context)!.gramSuffix})'),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _isLoading
-                ? Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Gemini Recommendation',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.geminiRecommendation,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.blue,
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Text(
                   _recommendation,
-                  style: TextStyle(fontSize: 14, color: Colors.black),
+                  style: const TextStyle(fontSize: 14, color: Colors.black),
                 ),
               ],
             ),
@@ -235,7 +245,7 @@ class Legend extends StatelessWidget {
   final Color color;
   final String text;
 
-  const Legend({required this.color, required this.text});
+  const Legend({super.key, required this.color, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -249,10 +259,10 @@ class Legend extends StatelessWidget {
             shape: BoxShape.circle,
           ),
         ),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         Text(
           text,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
             color: Colors.black,

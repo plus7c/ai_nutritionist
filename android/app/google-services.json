@@ -1,48 +1,92 @@
 {
   "project_info": {
-    "project_number": "897369157103",
-    "project_id": "nutritionbot-93fa2",
-    "storage_bucket": "nutritionbot-93fa2.appspot.com"
+    "project_number": "375616503764",
+    "project_id": "nutrai-personal",
+    "storage_bucket": "nutrai-personal.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:897369157103:android:d67cc75f2f2b555efa9a1a",
+        "mobilesdk_app_id": "1:375616503764:android:595d93f5977aef49e5a041",
         "android_client_info": {
           "package_name": "com.example.NutrAI"
         }
       },
       "oauth_client": [
         {
-          "client_id": "897369157103-spk7jovn9lks2v3npfsbo6bmiahvf6sh.apps.googleusercontent.com",
+          "client_id": "375616503764-4f8pvt1offa4gfl2nd7amirpm39s2d5o.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.NutrAI",
-            "certificate_hash": "b2274a20c51e12bb1e48884a6175e8ec7a7c6870"
+            "certificate_hash": "1a4f739771052602b706b4cb950d16fd8fd2d9fe"
           }
         },
         {
-          "client_id": "897369157103-8365qkuph44l4vjpgnklv275d15kq6pk.apps.googleusercontent.com",
+          "client_id": "375616503764-l78jtn1buinap4i596a50nplojvsgamq.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCvySFYTz2hEZ2FzbUx_XqUi-qWKMulC2s"
+          "current_key": "AIzaSyAQrnTvLOex_WAHDCccIm4xuymltRhXWcg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "897369157103-8365qkuph44l4vjpgnklv275d15kq6pk.apps.googleusercontent.com",
+              "client_id": "375616503764-l78jtn1buinap4i596a50nplojvsgamq.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "897369157103-d9m8ljus24lcph69b09h6n5s9qkrrvf3.apps.googleusercontent.com",
+              "client_id": "375616503764-f62tgf2m7dmlq2f3f3gf967jpkhomfnr.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.NutrAI"
+                "bundle_id": "com.example.pizzaOrderingApp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:375616503764:android:33906688eefba7ade5a041",
+        "android_client_info": {
+          "package_name": "com.example.nutrai"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "375616503764-m03sr61sap1tjegm6ncvghi4iv0s9blp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.nutrai",
+            "certificate_hash": "1a4f739771052602b706b4cb950d16fd8fd2d9fe"
+          }
+        },
+        {
+          "client_id": "375616503764-l78jtn1buinap4i596a50nplojvsgamq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQrnTvLOex_WAHDCccIm4xuymltRhXWcg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "375616503764-l78jtn1buinap4i596a50nplojvsgamq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "375616503764-f62tgf2m7dmlq2f3f3gf967jpkhomfnr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.pizzaOrderingApp"
               }
             }
           ]

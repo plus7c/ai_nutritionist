@@ -11,22 +11,22 @@ class OnboardingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Define green color scheme
-    final primaryGreen = Color(0xFF4CAF50);
-    final darkGreen = Color(0xFF388E3C);
-    final lightGreen = Color(0xFFA5D6A7);
+    final primaryGreen = const Color(0xFF4CAF50);
+    final darkGreen = const Color(0xFF388E3C);
+    final lightGreen = const Color(0xFFA5D6A7);
 
     return Directionality(
       textDirection: TextDirection.ltr,
       child: IntroductionScreen(
         pages: [
           PageViewModel(
-            title: "Welcome to NutrAI",
-            body: "NutrAI is a cutting-edge mobile app that leverages advanced AI technology to offer personalized nutrition recommendations, meal planning, and food analysis",
+            title: "Welcome to nutrai",
+            body: "nutrai is a cutting-edge mobile app that leverages advanced AI technology to offer personalized nutrition recommendations, meal planning, and food analysis",
             image: Center(child: Image.asset("assets/images/12.jpeg", height: 175.0)),
             decoration: PageDecoration(
               titleTextStyle: TextStyle(color: darkGreen, fontSize: 24, fontWeight: FontWeight.bold),
-              bodyTextStyle: TextStyle(color: Colors.black87, fontSize: 16),
-              imagePadding: EdgeInsets.only(top: 40),
+              bodyTextStyle: const TextStyle(color: Colors.black87, fontSize: 16),
+              imagePadding: const EdgeInsets.only(top: 40),
             ),
           ),
           PageViewModel(
@@ -35,8 +35,8 @@ class OnboardingScreen extends StatelessWidget {
             image: Center(child: Image.asset("assets/images/14.jpeg", height: 175.0)),
             decoration: PageDecoration(
               titleTextStyle: TextStyle(color: darkGreen, fontSize: 24, fontWeight: FontWeight.bold),
-              bodyTextStyle: TextStyle(color: Colors.black87, fontSize: 16),
-              imagePadding: EdgeInsets.only(top: 40),
+              bodyTextStyle: const TextStyle(color: Colors.black87, fontSize: 16),
+              imagePadding: const EdgeInsets.only(top: 40),
             ),
           ),
           PageViewModel(
@@ -45,8 +45,8 @@ class OnboardingScreen extends StatelessWidget {
             image: Center(child: Image.asset("assets/images/13.jpeg", height: 175.0)),
             decoration: PageDecoration(
               titleTextStyle: TextStyle(color: darkGreen, fontSize: 24, fontWeight: FontWeight.bold),
-              bodyTextStyle: TextStyle(color: Colors.black87, fontSize: 16),
-              imagePadding: EdgeInsets.only(top: 40),
+              bodyTextStyle: const TextStyle(color: Colors.black87, fontSize: 16),
+              imagePadding: const EdgeInsets.only(top: 40),
             ),
           ),
         ],
@@ -75,8 +75,8 @@ class OnboardingScreen extends StatelessWidget {
         next: Icon(Icons.arrow_forward, color: primaryGreen),
         done: Text("Done", style: TextStyle(fontWeight: FontWeight.w600, color: darkGreen)),
         dotsDecorator: DotsDecorator(
-          size: Size.square(10.0),
-          activeSize: Size(22.0, 10.0),
+          size: const Size.square(10.0),
+          activeSize: const Size(22.0, 10.0),
           activeColor: primaryGreen,
           color: lightGreen,
           activeShape: RoundedRectangleBorder(
@@ -85,8 +85,8 @@ class OnboardingScreen extends StatelessWidget {
         ),
         globalBackgroundColor: Colors.white,
         curve: Curves.fastLinearToSlowEaseIn,
-        controlsMargin: EdgeInsets.all(16),
-        controlsPadding: EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
+        controlsMargin: const EdgeInsets.all(16),
+        controlsPadding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
         showNextButton: true,
         nextFlex: 0,
         dotsFlex: 2,
@@ -101,14 +101,16 @@ class OnboardingScreen extends StatelessWidget {
 }
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Home Screen"),
-        backgroundColor: Color(0xFF4CAF50),
+        title: const Text("Home Screen"),
+        backgroundColor: const Color(0xFF4CAF50),
       ),
-      body: Center(
+      body: const Center(
         child: Text("Welcome to the app!"),
       ),
     );

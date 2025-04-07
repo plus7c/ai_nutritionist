@@ -1,0 +1,245 @@
+{
+  "appTitle": "NutrAI",
+  "welcomeMessage": "Welcome to NutrAI",
+  "chatPageTitle": "AI Nutrition Assistant",
+  "aiGreeting": "Hi there! I'm your AI Nutrition assistant. Ready to start your journey towards a healthier you. How can I be of help? 😊",
+  "userProfileTitle": "User Profile",
+  "saveProfile": "Save Profile",
+  "addButtonText": "Add",
+  "skipButtonText": "Skip",
+  "doneButtonText": "Done",
+  "homeScreenTitle": "Home Screen",
+  "welcomeToApp": "Welcome to the app!",
+  "quickAddTitle": "Quick Add",
+  "mealText": "Meal",
+  "goPremiumText": "Go Premium",
+  "noWeightDataText": "No weight data available",
+  "failedToDeleteMealText": "Failed to delete meal item. Please try again.",
+  "deleteMealItemTitle": "Delete Meal Item",
+  "deleteMealItemConfirmation": "Are you sure you want to delete this meal item?",
+  "cancelButtonText": "Cancel",
+  "deleteButtonText": "Delete",
+  "logFoodText": "LOG FOOD",
+  "swipeToDeleteText": "To delete log entry swipe left",
+  "totalCaloriesText": "Total Calories: {calories} kCal",
+  "@totalCaloriesText": {
+    "placeholders": {
+      "calories": {
+        "type": "String"
+      }
+    }
+  },
+  "userDataSavedText": "User data saved successfully!",
+  "errorSavingUserDataText": "Error saving user data: {error}",
+  "@errorSavingUserDataText": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noUserSignedInText": "No user is signed in. Please sign in first.",
+  "unexpectedErrorText": "An unexpected error occurred: {error}",
+  "@unexpectedErrorText": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorGeneratingResponseText": "An error occurred while generating a response. Please try again later.",
+  "responseGenerationFailedText": "I'm sorry, I couldn't generate a response. Please try again.",
+  "photoButtonText": "Photo",
+  "fileButtonText": "File",
+  "languageSettingsTitle": "Language Settings",
+  "selectLanguageText": "Select your preferred language",
+  "languageOptionText": "Language",
+  "profileOptionsTitle": "Profile Options",
+  "greetingText": "Hi there!!",
+  "signOutButtonText": "Sign Out",
+  "confirmSignOutTitle": "Confirm Sign Out",
+  "signOutConfirmationText": "Are you sure you want to sign out?",
+  "signOutConfirmationSubtext": "You will need to sign in again to access your account.",
+  "editProfileTitle": "Edit Profile",
+  "editProfileSubtitle": "configure your height, weight, age, allergens, goals",
+  "privacyPolicyTitle": "Privacy Policy",
+  "privacyPolicySubtitle": "You can delete your data or export it here",
+  "errorSigningOutText": "Error signing out. Please try again.",
+  "nameLabel": "Name",
+  "genderLabel": "Gender",
+  "maleText": "Male",
+  "femaleText": "Female",
+  "otherText": "Other",
+  "dateOfBirthLabel": "Date of Birth",
+  "selectDateText": "Select Date",
+  "weightLabel": "Weight (kg)",
+  "heightLabel": "Height",
+  "cmText": "cm",
+  "ftText": "ft",
+  "inText": "in",
+  "allergiesLabel": "Allergies",
+  "goalsLabel": "Goals",
+  "weightLossGoal": "Weight loss",
+  "allergiesGoal": "Allergies and food sensitivities",
+  "mealPlanningGoal": "Meal planning",
+  "nutritionGoalsGoal": "Set personal nutrition goals",
+  "eatingHabitsGoal": "Better eating habits",
+  "chronicDiseasesGoal": "Chronic diseases",
+  "digestiveIssuesGoal": "Digestive issues",
+  "otherGoal": "Other",
+  "saveButtonText": "Save",
+  "enterHeightText": "Please enter your height in feet and inches.",
+  "enterNewText": "Enter new",
+  "languageChangedText": "Language changed successfully",
+  "foodLoggerPageTitle": "Upload or Click",
+  "foodLoggerPageDescription": "You can upload or click to learn about food infront of you or upload a photo",
+  "detectAllergensOption": "Detect Allergens 🥜",
+  "nutrientInfoOption": "Detailed Nutrient Info 🥦",
+  "learnAboutFoodOption": "Learn About Food 🍎",
+  "funFactsOption": "Fun Facts About Food 🌮",
+  "generateDishOption": "Generate Dish 🍳",
+  "capturePhotoAction": "Capture Photo",
+  "uploadImageAction": "Upload Image",
+  "actionForOption": "{action} for {option}",
+  "@actionForOption": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "option": {
+        "type": "String"
+      }
+    }
+  },
+  "noImageSelected": "No image selected. Please try again.",
+  "failedToPickImage": "Failed to pick image: {error}",
+  "@failedToPickImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "resultDisclaimer": "Note: Results could be inaccurate. Always verify with a professional.",
+  "dailyStatsPageTitle": "Daily Stats",
+  "dailyCaloriesLabel": "Daily calories",
+  "eatenLabel": "Eaten",
+  "caloriesAvailableText": "{calories} Kcal available",
+  "@caloriesAvailableText": {
+    "placeholders": {
+      "calories": {
+        "type": "int"
+      }
+    }
+  },
+  "bmiTitle": "BMI",
+  "bmiValue": "Your BMI: {value}",
+  "@bmiValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "underweightText": "Underweight",
+  "normalWeightText": "Normal",
+  "overweightText": "Overweight",
+  "obeseText": "Obese",
+  "nutrientsSectionTitle": "Nutrients",
+  "proteinLabel": "Protein",
+  "fatsLabel": "Fats",
+  "carbsLabel": "Carbs",
+  "gramSuffix": "g",
+  "geminiRecommendation": "Gemini Recommendation",
+  "caloriesRemainingPageTitle": "Calories Remaining",
+  "caloriesRemainingText": "You have {calories} kCal remaining for today",
+  "@caloriesRemainingText": {
+    "placeholders": {
+      "calories": {
+        "type": "int"
+      }
+    }
+  },
+  "logFoodButton": "LOG FOOD",
+  "deleteEntrySwipeHint": "To delete log entry swipe left",
+  "noMealsLoggedMessage": "No meals logged for this date...",
+  "caloriesUnitText": "{calories} kCal",
+  "@caloriesUnitText": {
+    "placeholders": {
+      "calories": {
+        "type": "int"
+      }
+    }
+  },
+  "cancelButton": "Cancel",
+  "deleteButton": "Delete",
+  "failedToDeleteMealItem": "Failed to delete meal item. Please try again.",
+  "addMealLogPageTitle": "Add Meal Log",
+  "logDateLabel": "Log Date",
+  "mealTypeLabel": "Meal Type",
+  "mealItemNameLabel": "Meal Item Name",
+  "caloriesLabel": "Calories",
+  "carbsLabel": "Carbs (g)",
+  "fatsLabel": "Fats (g)",
+  "proteinLabel": "Protein (g)",
+  "servingSizeLabel": "Serving Size (g)",
+  "takePhotoButton": "Take Photo",
+  "addMealItemButton": "Add Meal Item",
+  "saveMealLogButton": "Save Meal Log",
+  "mealItemsLabel": "Meal Items:",
+  "caloriesValueText": "Calories: {calories} kcal",
+  "@caloriesValueText": {
+    "placeholders": {
+      "calories": {
+        "type": "int"
+      }
+    }
+  },
+  "macroNutrientsText": "Carbs: {carbs}g | Fats: {fats}g | Protein: {protein}g",
+  "@macroNutrientsText": {
+    "placeholders": {
+      "carbs": {
+        "type": "double"
+      },
+      "fats": {
+        "type": "double"
+      },
+      "protein": {
+        "type": "double"
+      }
+    }
+  },
+  "servingSizeValueText": "Serving Size: {servingSize}g",
+  "@servingSizeValueText": {
+    "placeholders": {
+      "servingSize": {
+        "type": "double"
+      }
+    }
+  },
+  "addMealItemValidationError": "Please enter a meal item name",
+  "addCaloriesValidationError": "Please enter calories",
+  "addMealLogValidationError": "Please add at least one meal item and specify a meal type.",
+  "loginRequiredError": "You must be logged in to save a meal log. Please sign in and try again.",
+  "mealLogAddedSuccess": "Meal log added successfully!",
+  "mealLogSaveError": "Error saving meal log: {error}",
+  "@mealLogSaveError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "unexpectedError": "An unexpected error occurred: {error}",
+  "@unexpectedError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "breakfastMealType": "Breakfast",
+  "lunchMealType": "Lunch",
+  "dinnerMealType": "Dinner",
+  "snackMealType": "Snack"
+}

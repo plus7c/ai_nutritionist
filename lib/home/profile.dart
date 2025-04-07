@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:fluttermoji/fluttermoji.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../firebase_gemini_helper/firebase_gemini_helper.dart';
 import '../firestore_helper.dart';
 
 class HomeProfile extends StatefulWidget {
+  const HomeProfile({super.key});
+
   @override
   _HomeProfileState createState() => _HomeProfileState();
 }
@@ -121,14 +124,14 @@ class _HomeProfileState extends State<HomeProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: Text(AppLocalizations.of(context)!.userProfileTitle),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
         foregroundColor: Colors.black,
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator()):
+          ? const Center(child: CircularProgressIndicator()):
       SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -142,22 +145,47 @@ class _HomeProfileState extends State<HomeProfile> {
                   radius: 30,
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Center(
                 child: Text(
-                  name.isNotEmpty ? name : 'Set your name',
+                  name.isNotEmpty ? name : AppLocalizations.of(context)!.nameLabel,
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ),
 
-              SizedBox(height: 24),
-              _buildInfoTile('Weight', weight != null ? '${weight!.toStringAsFixed(1)} lbs' : 'Not set', Icons.fitness_center, () => _showUpdateDialog('Weight', 'weight')),
-              _buildInfoTile('Height', _formatHeight(), Icons.height, () => _showUpdateDialog('Height', 'height')),
-              _buildInfoTile('Gender', gender.isNotEmpty ? gender : 'Not set', Icons.person, _showGenderDialog),
-              _buildInfoTile('Date of Birth', dateOfBirth != null ? DateFormat('MMM d, y').format(dateOfBirth!) : 'Not set', Icons.cake, _showDateOfBirthPicker),
-              _buildInfoTile('Allergies', allergies.isNotEmpty ? allergies.join(', ') : 'None', Icons.warning, _showAllergiesDialog),
-              SizedBox(height: 24),
-              Text('Goals', style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 24),
+              _buildInfoTile(
+                AppLocalizations.of(context)!.weightLabel, 
+                weight != null ? '${weight!.toStringAsFixed(1)} kg' : AppLocalizations.of(context)!.selectDateText, 
+                Icons.fitness_center, 
+                () => _showUpdateDialog(AppLocalizations.of(context)!.weightLabel, 'weight')
+              ),
+              _buildInfoTile(
+                AppLocalizations.of(context)!.heightLabel, 
+                _formatHeight(), 
+                Icons.height, 
+                () => _showUpdateDialog(AppLocalizations.of(context)!.heightLabel, 'height')
+              ),
+              _buildInfoTile(
+                AppLocalizations.of(context)!.genderLabel, 
+                gender.isNotEmpty ? _getLocalizedGender(context, gender) : AppLocalizations.of(context)!.selectDateText, 
+                Icons.person, 
+                _showGenderDialog
+              ),
+              _buildInfoTile(
+                AppLocalizations.of(context)!.dateOfBirthLabel, 
+                dateOfBirth != null ? DateFormat('yyyy-MM-dd').format(dateOfBirth!) : AppLocalizations.of(context)!.selectDateText, 
+                Icons.cake, 
+                _showDateOfBirthPicker
+              ),
+              _buildInfoTile(
+                AppLocalizations.of(context)!.allergiesLabel, 
+                allergies.isNotEmpty ? allergies.join(', ') : AppLocalizations.of(context)!.selectDateText, 
+                Icons.warning, 
+                _showAllergiesDialog
+              ),
+              const SizedBox(height: 24),
+              Text(AppLocalizations.of(context)!.goalsLabel, style: Theme.of(context).textTheme.titleLarge),
               ..._buildGoalItems(),
             ],
           ),
@@ -171,14 +199,14 @@ class _HomeProfileState extends State<HomeProfile> {
       leading: Icon(icon),
       title: Text(title),
       subtitle: Text(value),
-      trailing: Icon(Icons.edit),
+      trailing: const Icon(Icons.edit),
       onTap: onTap,
     );
   }
 
   List<Widget> _buildGoalItems() {
     return goals.map((goal) => CheckboxListTile(
-      title: Text(goal),
+      title: Text(_getLocalizedGoal(context, goal)),
       value: selectedGoals.contains(goal),
       onChanged: (bool? value) {
         setState(() {
@@ -224,47 +252,47 @@ class _HomeProfileState extends State<HomeProfile> {
                   child: TextField(
                     controller: feetController,
                     decoration: InputDecoration(
-                      labelText: 'Feet',
-                      border: OutlineInputBorder(),
+                      labelText: AppLocalizations.of(context)!.ftText,
+                      border: const OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.number,
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Expanded(
                   child: TextField(
                     controller: inchesController,
                     decoration: InputDecoration(
-                      labelText: 'Inches',
-                      border: OutlineInputBorder(),
+                      labelText: AppLocalizations.of(context)!.inText,
+                      border: const OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.number,
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
-              'Please enter your height in feet and inches.',
-              style: TextStyle(color: Colors.grey),
+              AppLocalizations.of(context)!.enterHeightText,
+              style: const TextStyle(color: Colors.grey),
             ),
           ],
         )
             : TextField(
           decoration: InputDecoration(
-            hintText: 'Enter new $title',
-            border: OutlineInputBorder(),
+            hintText: AppLocalizations.of(context)!.enterNewText + ' $title',
+            border: const OutlineInputBorder(),
           ),
           keyboardType: field == 'weight' ? TextInputType.number : TextInputType.text,
           onChanged: (val) => value = val,
         ),
         actions: [
           TextButton(
-            child: Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancelButtonText),
             onPressed: () => Navigator.pop(context),
           ),
           ElevatedButton(
-            child: Text('Update'),
+            child: Text(AppLocalizations.of(context)!.saveButtonText),
             onPressed: () {
               Navigator.pop(context);
               if (field == 'height') {
@@ -296,7 +324,7 @@ class _HomeProfileState extends State<HomeProfile> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Update Gender'),
+        title: const Text('Update Gender'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: genderOptions.map((option) => RadioListTile<String>(
@@ -330,7 +358,7 @@ class _HomeProfileState extends State<HomeProfile> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Update Allergies'),
+        title: const Text('Update Allergies'),
         content: StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return SingleChildScrollView(
@@ -349,9 +377,9 @@ class _HomeProfileState extends State<HomeProfile> {
                         }
                       });
                     },
-                  )).toList(),
+                  )),
                   TextField(
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: 'Other allergies (comma-separated)',
                     ),
                     onChanged: (value) {
@@ -364,9 +392,9 @@ class _HomeProfileState extends State<HomeProfile> {
           },
         ),
         actions: [
-          TextButton(child: Text('Cancel'), onPressed: () => Navigator.pop(context)),
+          TextButton(child: const Text('Cancel'), onPressed: () => Navigator.pop(context)),
           TextButton(
-            child: Text('Update'),
+            child: const Text('Update'),
             onPressed: () {
               Navigator.pop(context);
               _updateField('allergies', updatedAllergies);
@@ -375,5 +403,41 @@ class _HomeProfileState extends State<HomeProfile> {
         ],
       ),
     );
+  }
+
+  String _getLocalizedGender(BuildContext context, String gender) {
+    switch (gender.toLowerCase()) {
+      case 'male':
+        return AppLocalizations.of(context)!.maleText;
+      case 'female':
+        return AppLocalizations.of(context)!.femaleText;
+      case 'other':
+        return AppLocalizations.of(context)!.otherText;
+      default:
+        return gender;
+    }
+  }
+
+  String _getLocalizedGoal(BuildContext context, String goal) {
+    switch (goal) {
+      case 'Weight loss':
+        return AppLocalizations.of(context)!.weightLossGoal;
+      case 'Allergies and food sensitivities':
+        return AppLocalizations.of(context)!.allergiesGoal;
+      case 'Meal planning':
+        return AppLocalizations.of(context)!.mealPlanningGoal;
+      case 'Set personal nutrition goals':
+        return AppLocalizations.of(context)!.nutritionGoalsGoal;
+      case 'Better eating habits':
+        return AppLocalizations.of(context)!.eatingHabitsGoal;
+      case 'Chronic diseases':
+        return AppLocalizations.of(context)!.chronicDiseasesGoal;
+      case 'Digestive issues':
+        return AppLocalizations.of(context)!.digestiveIssuesGoal;
+      case 'Other':
+        return AppLocalizations.of(context)!.otherGoal;
+      default:
+        return goal;
+    }
   }
 }

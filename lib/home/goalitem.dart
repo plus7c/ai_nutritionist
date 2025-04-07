@@ -6,7 +6,7 @@ class GoalItem extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  const GoalItem({required this.icon, required this.label, required this.selected, required this.onTap});
+  const GoalItem({super.key, required this.icon, required this.label, required this.selected, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class GoalItem extends StatelessWidget {
       child: Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
-          side: selected ? BorderSide(color: Colors.green, width: 2) : BorderSide.none,
+          side: selected ? const BorderSide(color: Colors.green, width: 2) : BorderSide.none,
         ),
         elevation: selected ? 4 : 1,
         child: Padding(
@@ -23,15 +23,15 @@ class GoalItem extends StatelessWidget {
           child: Row(
             children: [
               Icon(icon, size: 24),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: Text(
                   label,
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                 ),
               ),
               if (selected)
-                Icon(Icons.check, color: Colors.green),
+                const Icon(Icons.check, color: Colors.green),
             ],
           ),
         ),

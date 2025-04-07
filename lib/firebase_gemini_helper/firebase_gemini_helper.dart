@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../firestore_helper.dart';
-import '../gemini_engine/gemini_stats_section.dart';
+import '../gemini_engine/gemini_stats_section.dart' as tongyi;
 import '../stats/bmi.dart';
-import 'package:firebase_vertexai/firebase_vertexai.dart';
-final model = FirebaseVertexAI.instance.generativeModel(model: 'gemini-1.5-flash');
+import 'dart:async';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -29,22 +28,24 @@ Future<String> getBMIRecommendation({bool triggeredFromProfilePage = false}) asy
 
     if(triggeredFromProfilePage)
     {
-        String geminiRecommendation = await getGeminiRecommendationForBMI(bmi);
+        // 使用千问API获取BMI建议
+        String aiRecommendation = await tongyi.getBMIRecommendation(bmi);
         await userDocRef.collection('healthstatus').doc('bmirecommendation').set({
           'lastupdatedtime': now,
-          'recommendationstring': geminiRecommendation,
+          'recommendationstring': aiRecommendation,
         });
         return '';
     }
 
     if (!healthStatusDoc.exists) {
       // If the document doesn't exist, create it with initial values
-      String geminiRecommendation = await getGeminiRecommendationForBMI(bmi);
+      // 使用千问API获取BMI建议
+      String aiRecommendation = await tongyi.getBMIRecommendation(bmi);
       await userDocRef.collection('healthstatus').doc('bmirecommendation').set({
         'lastupdatedtime': now,
-        'recommendationstring': geminiRecommendation,
+        'recommendationstring': aiRecommendation,
       });
-      return geminiRecommendation;
+      return aiRecommendation;
     } else {
       // Document exists, check the lastupdatedtime
       Map<String, dynamic> data = healthStatusDoc.data() as Map<String, dynamic>;
@@ -53,22 +54,22 @@ Future<String> getBMIRecommendation({bool triggeredFromProfilePage = false}) asy
 
       // Check if the last update was more than 24 hours ago
       if (now.difference(lastUpdated.toDate()).inHours > 24) {
-        String geminiRecommendation = await getGeminiRecommendationForBMI(bmi);
+        // 使用千问API获取BMI建议
+        String aiRecommendation = await tongyi.getBMIRecommendation(bmi);
         // If more than 24 hours, update the lastupdatedtime and generate a new recommendation
-        // For this example, we're just updating the time. In a real app, you'd recalculate the recommendation here.
         await userDocRef.collection('healthstatus').doc('bmirecommendation').update({
           'lastupdatedtime': now,
-          'recommendationstring': geminiRecommendation,
+          'recommendationstring': aiRecommendation,
         });
-        return 'Updated bmi recommendation to: $geminiRecommendation';
+        return '已更新BMI建议: $aiRecommendation';
       } else {
         // If less than 24 hours, return the existing recommendation
         return recommendation;
       }
     }
   } catch (e) {
-    print('Error fetching BMI recommendation: $e');
-    return 'Error fetching recommendation. Please try again later.';
+    print('获取BMI建议时出错: $e');
+    return '获取建议时出错，请稍后再试。';
   }
 }
 
@@ -82,70 +83,82 @@ class HealthStatus {
 
 Future<HealthStatus> analyzeHealth(Map<String, dynamic> healthData) async {
   String prompt = """
-    Analyze the following health data and provide:
-    1. A health score out of 100
-    2. A detailed recommendation (about 3-4 sentences)
+    分析以下健康数据并提供：
+    1. 健康评分（0-100）
+    2. 详细建议（约3-4句话）
 
-    User Health Data:
-    - Username: ${healthData['username']}
-    - Gender: ${healthData['gender']}
-    - Date of Birth: ${healthData['dateOfBirth']}
-    - Weight: ${healthData['weight']} lbs
-    - Height: ${healthData['height']['feet']} feet ${healthData['height']['inches']} inches
-    - Goals: ${healthData['goals'].join(', ')}
+    用户健康数据：
+    - 用户名：${healthData['username']}
+    - 性别：${healthData['gender']}
+    - 出生日期：${healthData['dateOfBirth']}
+    - 体重：${healthData['weight']} 磅
+    - 身高：${healthData['height']['feet']} 英尺 ${healthData['height']['inches']} 英寸
+    - 目标：${healthData['goals'].join(', ')}
 
-    Please format your response as follows (even if you find errors):
-    Score: [numerical score]
-    Recommendation: [your detailed recommendation]
-    Errors: true/false
+    请按照以下格式返回结果（即使发现错误）：
+    评分：[数字评分]
+    建议：[详细建议]
+    错误：true/false
     """;
 
-  final promptVal = [Content.text(prompt)];
-  final response = await model.generateContent(promptVal);
-  String? aiResponse = response.text;
-
-  if (aiResponse == null) {
-    throw Exception('Failed to get a response from Gemini');
+  // 调用千问API
+  String aiResponse;
+  try {
+    aiResponse = await tongyi.generateAIResponse(prompt);
+  } catch (e) {
+    throw Exception('调用千问API失败: $e');
   }
 
-  // Parse the AI response
-  final lines = aiResponse.split('\n');
+  if (aiResponse.isEmpty) {
+    throw Exception('无法从千问获取响应');
+  }
+
+  // 解析AI响应
+  List<String> lines = aiResponse.split('\n');
   int score = 0;
   String recommendation = '';
   bool errors = false;
 
   for (var line in lines) {
-    if (line.startsWith('Score:')) {
+    if (line.startsWith('评分:')) {
       score = int.tryParse(line.split(':')[1].trim()) ?? 0;
-    } else if (line.startsWith('Recommendation:')) {
+    } else if (line.startsWith('建议:')) {
       recommendation = line.split(':')[1].trim();
-    } else if (line.startsWith('Errors:')) {
+    } else if (line.startsWith('错误:')) {
       errors = line.split(':')[1].trim() == 'true';
     }
   }
 
-  return HealthStatus(score: score, recommendation: recommendation, errors: errors);
+  return HealthStatus(
+    score: score,
+    recommendation: recommendation,
+    errors: errors,
+  );
 }
 
-Future<HealthStatus> GetOverallHealthStatus() async {
-  DateTime now = DateTime.now();
+Future<HealthStatus> getOverallHealthStatus() async {
   String userId = _auth.currentUser!.uid;
-
+  DateTime now = DateTime.now();
+  
   try {
-    DocumentReference userDocRef = _firestore.collection('users').doc(userId);
-    DocumentSnapshot userDoc = await userDocRef.get();
-
-    if (!userDoc.exists) {
-      throw Exception('User document not found');
+    var userData = await _firestoreService.getUserData(userId);
+    if (userData == null) {
+      throw Exception('无法获取用户数据');
     }
 
-    Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+    // 检查是否有现有的健康状态记录
+    DocumentSnapshot healthStatusDoc = await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('healthstatus')
+        .doc('overallstatus')
+        .get();
 
-    // Fetch the last health status
-    DocumentSnapshot healthStatusDoc = await userDocRef.collection('healthstatus').doc('overallhealthstatus').get();
-
-    // Check if the document doesn't exist or if it exists but has errors
-    if (!healthStatusDoc.exists || (healthStatusDoc.exists && (healthStatusDoc.data() as Map<String, dynamic>)['errors'] == true)) {
+    // 如果不存在或者上次更新超过24小时，则生成新的健康状态
+    if (!healthStatusDoc.exists || 
+        now.difference((healthStatusDoc.data() as Map<String, dynamic>)['lastupdatedtime'].toDate()).inHours > 24) {
+      
+      // 准备健康数据
       Map<String, dynamic> healthData = {
         'username': userData['username'],
         'gender': userData['gender'],
@@ -156,57 +169,34 @@ Future<HealthStatus> GetOverallHealthStatus() async {
         'allergies': userData['allergies'],
       };
 
-      // Call Gemini API to get health analysis
+      // 调用千问API获取健康分析
       HealthStatus newStatus = await analyzeHealth(healthData);
 
-      // Update Firestore with new health status
-      await userDocRef.collection('healthstatus').doc('overallhealthstatus').set({
-        'lastupdatedtime': now,
+      // 更新Firestore的健康状态
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('healthstatus')
+          .doc('overallstatus')
+          .set({
         'score': newStatus.score,
         'recommendation': newStatus.recommendation,
-        'errors': newStatus.errors
-      });
-
-      return newStatus;
-    }
-
-    // If the document exists and doesn't have errors, check if it's outdated
-    if (now.difference((healthStatusDoc.data() as Map<String, dynamic>)['lastupdatedtime'].toDate()).inHours > 24) {
-      // If health status is older than 24 hours, calculate a new one
-
-      Map<String, dynamic> healthData = {
-        'username': userData['username'],
-        'gender': userData['gender'],
-        'dateOfBirth': userData['dateOfBirth'],
-        'weight': userData['weight'],
-        'height': userData['height'],
-        'goals': userData['goals'],
-        'allergies': userData['allergies'],
-      };
-
-      // Call Gemini API to get health analysis
-      HealthStatus newStatus = await analyzeHealth(healthData);
-
-      // Update Firestore with new health status
-      await userDocRef.collection('healthstatus').doc('overallhealthstatus').set({
         'lastupdatedtime': now,
-        'score': newStatus.score,
-        'recommendation': newStatus.recommendation,
-        'errors': newStatus.errors
+        'errors': newStatus.errors,
       });
 
       return newStatus;
     } else {
-      // If health status is recent and doesn't have errors, return the stored data
-      Map<String, dynamic> statusData = healthStatusDoc.data() as Map<String, dynamic>;
+      // 使用现有的健康状态
+      Map<String, dynamic> data = healthStatusDoc.data() as Map<String, dynamic>;
       return HealthStatus(
-          score: statusData['score'],
-          recommendation: statusData['recommendation'],
-          errors: statusData['errors']
+        score: data['score'],
+        recommendation: data['recommendation'],
+        errors: data['errors'] ?? false,
       );
     }
   } catch (e) {
-    print('Error fetching overall health status: $e');
-    return HealthStatus(score: 0, recommendation: 'Error fetching health status. Please try again later.', errors: true);
+    print('获取整体健康状态时出错: $e');
+    return HealthStatus(score: 0, recommendation: '获取健康状态时出错，请稍后再试。', errors: true);
   }
 }

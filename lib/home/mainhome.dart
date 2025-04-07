@@ -1,13 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../auth/signup.dart';
 import '../firebase_gemini_helper/firebase_gemini_helper.dart';
 import 'privacy.dart';
 import 'profile.dart';
+import 'language_settings.dart';
 
 class MainHome extends StatefulWidget {
+  const MainHome({super.key});
+
   @override
   State<MainHome> createState() => _MainHomeState();
 }
@@ -24,7 +28,7 @@ class _MainHomeState extends State<MainHome> {
 
   Future<void> _fetchHealthStatus() async {
     try {
-      final status = await GetOverallHealthStatus();
+      final status = await getOverallHealthStatus();
       setState(() {
         _healthStatus = status;
         _isLoading = false;
@@ -39,7 +43,7 @@ class _MainHomeState extends State<MainHome> {
 
   List<Widget> _buildRecommendationList() {
     if (_healthStatus == null) {
-      return [Text('Unable to fetch health status')];
+      return [const Text('Unable to fetch health status')];
     }
 
     List<String> recommendations = _healthStatus!.recommendation.split('. ');
@@ -52,24 +56,30 @@ class _MainHomeState extends State<MainHome> {
       barrierDismissible: false, // User must tap button to close dialog
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirm Sign Out'),
+          title: Text(AppLocalizations.of(context)!.confirmSignOutTitle),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Are you sure you want to sign out?'),
-                Text('You will need to sign in again to access your account.'),
+                Text(AppLocalizations.of(context)!.signOutConfirmationText),
+                Text(AppLocalizations.of(context)!.signOutConfirmationSubtext),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel', style: TextStyle(color: Colors.grey)),
+              child: Text(
+                AppLocalizations.of(context)!.cancelButtonText,
+                style: const TextStyle(color: Colors.grey)
+              ),
               onPressed: () {
                 Navigator.of(context).pop(); // Dismiss the dialog
               },
             ),
             TextButton(
-              child: Text('Sign Out', style: TextStyle(color: Colors.green)),
+              child: Text(
+                AppLocalizations.of(context)!.signOutButtonText,
+                style: const TextStyle(color: Colors.green)
+              ),
               onPressed: () {
                 Navigator.of(context).pop(); // Dismiss the dialog
                 _signOut(context); // Call the sign out function
@@ -90,7 +100,7 @@ class _MainHomeState extends State<MainHome> {
     } catch (e) {
       print('Error signing out: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error signing out. Please try again.')),
+        const SnackBar(content: Text('Error signing out. Please try again.')),
       );
     }
   }
@@ -101,14 +111,14 @@ class _MainHomeState extends State<MainHome> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Profile Options',
-          style: TextStyle(
+          AppLocalizations.of(context)!.profileOptionsTitle,
+          style: const TextStyle(
             fontSize: 22.0,
             fontWeight: FontWeight.bold,
             fontFamily: 'Roboto',
           ),
         ),
-        leading: Icon(Icons.face_2_sharp),
+        leading: const Icon(Icons.face_2_sharp),
         elevation: 0,
       ),
       body: SafeArea(
@@ -121,7 +131,7 @@ class _MainHomeState extends State<MainHome> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Hi there!',
+                    AppLocalizations.of(context)!.greetingText,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.green,
@@ -134,13 +144,13 @@ class _MainHomeState extends State<MainHome> {
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.green,
                       backgroundColor: Colors.white,
-                      side: BorderSide(color: Colors.green),
+                      side: const BorderSide(color: Colors.green),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     child: Text(
-                      'Sign Out',
+                      AppLocalizations.of(context)!.signOutButtonText,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Colors.green,
@@ -149,18 +159,23 @@ class _MainHomeState extends State<MainHome> {
                   )
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Card(
                 elevation: 4,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: ListTile(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  leading: Icon(Icons.edit, color: Colors.green),
-                  title: Text('Edit Profile', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
-                  subtitle: Text('configure your height, weight, age, allergens, goals'),
-                  trailing: Icon(Icons.arrow_forward_ios, color: Colors.green),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  leading: const Icon(Icons.edit, color: Colors.green),
+                  title: Text(
+                    AppLocalizations.of(context)!.editProfileTitle,
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500)
+                  ),
+                  subtitle: Text(
+                    AppLocalizations.of(context)!.editProfileSubtitle
+                  ),
+                  trailing: const Icon(Icons.arrow_forward_ios, color: Colors.green),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -175,11 +190,16 @@ class _MainHomeState extends State<MainHome> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: ListTile(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  leading: Icon(Icons.edit, color: Colors.green),
-                  title: Text('Privacy Policy', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
-                  subtitle: Text('You can delete your data or export it here'),
-                  trailing: Icon(Icons.arrow_forward_ios, color: Colors.green),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  leading: const Icon(Icons.edit, color: Colors.green),
+                  title: Text(
+                    AppLocalizations.of(context)!.privacyPolicyTitle,
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500)
+                  ),
+                  subtitle: Text(
+                    AppLocalizations.of(context)!.privacyPolicySubtitle
+                  ),
+                  trailing: const Icon(Icons.arrow_forward_ios, color: Colors.green),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -188,7 +208,31 @@ class _MainHomeState extends State<MainHome> {
                   },
                 ),
               ),
-              SizedBox(height: 16),
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  leading: const Icon(Icons.language, color: Colors.green),
+                  title: Text(
+                    AppLocalizations.of(context)!.languageOptionText,
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500)
+                  ),
+                  subtitle: Text(
+                    AppLocalizations.of(context)!.selectLanguageText
+                  ),
+                  trailing: const Icon(Icons.arrow_forward_ios, color: Colors.green),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LanguageSettingsPage()),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
               Card(
                   elevation: 4,
                   shape: RoundedRectangleBorder(
@@ -197,31 +241,31 @@ class _MainHomeState extends State<MainHome> {
                   child: Column(
                     children: [
                       ListTile(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                        title: Text('Overall Health Status',
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        title: const Text('Overall Health Status',
                             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
                         subtitle: _isLoading
-                            ? Center(child: CircularProgressIndicator(color: Colors.green,))
+                            ? const Center(child: CircularProgressIndicator(color: Colors.green,))
                             : Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: _buildRecommendationList(),
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Colors.green,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
                           _isLoading ? '...' : '${_healthStatus?.score ?? 0}/100',
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                      SizedBox(height: 15,)
+                      const SizedBox(height: 15,)
                     ],
                   )
               ),

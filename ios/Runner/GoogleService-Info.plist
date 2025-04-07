@@ -2,24 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CLIENT_ID</key>
-	<string>897369157103-d9m8ljus24lcph69b09h6n5s9qkrrvf3.apps.googleusercontent.com</string>
-	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.897369157103-d9m8ljus24lcph69b09h6n5s9qkrrvf3</string>
-	<key>ANDROID_CLIENT_ID</key>
-	<string>897369157103-spk7jovn9lks2v3npfsbo6bmiahvf6sh.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBOivfteup__nc0lPE_oJ_KLfjVmnGUYXY</string>
+	<string>AIzaSyDsaAYqO09EWbsrlya1R2CPuGsqK5_d2BQ</string>
 	<key>GCM_SENDER_ID</key>
-	<string>897369157103</string>
+	<string>375616503764</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.example.pizzaOrderingApp</string>
 	<key>PROJECT_ID</key>
-	<string>nutritionbot-93fa2</string>
+	<string>nutrai-personal</string>
 	<key>STORAGE_BUCKET</key>
-	<string>nutritionbot-93fa2.appspot.com</string>
+	<string>nutrai-personal.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:897369157103:ios:2f05b28b410aa441fa9a1a</string>
+	<string>1:375616503764:ios:d8db16b301f3bcd2e5a041</string>
 </dict>
 </plist>

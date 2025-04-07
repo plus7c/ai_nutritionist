@@ -3,8 +3,11 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:typed_data';
 import 'gemini_foodloggerpage.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class FoodLoggerPage extends StatefulWidget {
+  const FoodLoggerPage({super.key});
+
   @override
   _FoodLoggerPageState createState() => _FoodLoggerPageState();
 }
@@ -33,12 +36,12 @@ class _FoodLoggerPageState extends State<FoodLoggerPage> {
         });
       } else {
         setState(() {
-          _result = 'No image selected. Please try again.';
+          _result = AppLocalizations.of(context)!.noImageSelected;
         });
       }
     } catch (e) {
       setState(() {
-        _result = 'Failed to pick image: $e';
+        _result = AppLocalizations.of(context)!.failedToPickImage(e.toString());
       });
     } finally {
       if (mounted) {
@@ -51,7 +54,7 @@ class _FoodLoggerPageState extends State<FoodLoggerPage> {
 
   Widget _buildRecipeMarkdown(String recipeMarkdown) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
@@ -60,17 +63,17 @@ class _FoodLoggerPageState extends State<FoodLoggerPage> {
             color: Colors.grey.withOpacity(0.5),
             spreadRadius: 2,
             blurRadius: 5,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
       child: MarkdownBody(
         data: recipeMarkdown,
         styleSheet: MarkdownStyleSheet(
-          h1: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue),
-          h2: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
-          p: TextStyle(fontSize: 16),
-          listBullet: TextStyle(fontSize: 16),
+          h1: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue),
+          h2: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
+          p: const TextStyle(fontSize: 16),
+          listBullet: const TextStyle(fontSize: 16),
         ),
       ),
     );
@@ -84,38 +87,38 @@ class _FoodLoggerPageState extends State<FoodLoggerPage> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Upload or Click',
+          AppLocalizations.of(context)!.foodLoggerPageTitle,
           style: TextStyle(
             fontSize: 22.0,
             fontWeight: FontWeight.bold,
             fontFamily: 'Roboto',
           ),
         ),
-        leading: Icon(Icons.upload_file_sharp),
+        leading: const Icon(Icons.upload_file_sharp),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'You can upload or click to learn about food infront of you or upload a photo',
+              AppLocalizations.of(context)!.foodLoggerPageDescription,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
             ),
-            SizedBox(height: 16),
-            _buildOptionButton('Detect Allergens 🥜', 'allergen'),
-            _buildOptionButton('Detailed Nutrient Info 🥦', 'nutrients'),
-            _buildOptionButton('Learn About Food 🍎', 'learn'),
-            _buildOptionButton('Fun Facts About Food 🌮', 'fun_facts'),
-            _buildOptionButton('Generate Dish 🍳', 'generate_dish'),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
+            _buildOptionButton(AppLocalizations.of(context)!.detectAllergensOption, 'allergen'),
+            _buildOptionButton(AppLocalizations.of(context)!.nutrientInfoOption, 'nutrients'),
+            _buildOptionButton(AppLocalizations.of(context)!.learnAboutFoodOption, 'learn'),
+            _buildOptionButton(AppLocalizations.of(context)!.funFactsOption, 'fun_facts'),
+            _buildOptionButton(AppLocalizations.of(context)!.generateDishOption, 'generate_dish'),
+            const SizedBox(height: 16),
             if (_uploadedImage != null)
               Column(
                 children: [
                   Image.memory(_uploadedImage!),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                 ],
               ),
             if (_result.isNotEmpty)
@@ -124,7 +127,7 @@ class _FoodLoggerPageState extends State<FoodLoggerPage> {
               Padding(
                 padding: EdgeInsets.only(top: 16),
                 child: Text(
-                  'Note: Results could be inaccurate. Always verify with a professional.',
+                  AppLocalizations.of(context)!.resultDisclaimer,
                   style: TextStyle(color: Colors.red, fontStyle: FontStyle.italic),
                 ),
               ),
@@ -140,8 +143,8 @@ class _FoodLoggerPageState extends State<FoodLoggerPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _buildButton(title, type, ImageSource.camera, 'Capture Photo'),
-          _buildButton(title, type, ImageSource.gallery, 'Upload Image'),
+          _buildButton(title, type, ImageSource.camera, AppLocalizations.of(context)!.capturePhotoAction),
+          _buildButton(title, type, ImageSource.gallery, AppLocalizations.of(context)!.uploadImageAction),
         ],
       ),
     );
@@ -153,15 +156,15 @@ class _FoodLoggerPageState extends State<FoodLoggerPage> {
         padding: const EdgeInsets.symmetric(horizontal: 4.0),
         child: ElevatedButton(
           onPressed: () => _captureAndProcessImage(type, source),
-          child: Text("$action for $title"),
           style: ElevatedButton.styleFrom(
             foregroundColor: Colors.white,
             backgroundColor: Colors.green,
-            padding: EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(10.0),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8), // Slightly rounded corners
             ),
           ),
+          child: Text(AppLocalizations.of(context)!.actionForOption(action, title)),
         ),
       ),
     );

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class QuickAddPage extends StatefulWidget {
   final String mealType;
 
-  QuickAddPage({required this.mealType});
+  const QuickAddPage({super.key, required this.mealType});
 
   @override
   _QuickAddPageState createState() => _QuickAddPageState();
@@ -20,15 +20,15 @@ class _QuickAddPageState extends State<QuickAddPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Quick Add', style: TextStyle(color: Colors.white)),
+        title: const Text('Quick Add', style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
-            icon: Icon(Icons.check, color: Colors.white),
+            icon: const Icon(Icons.check, color: Colors.white),
             onPressed: _addFood,
           ),
         ],
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.blue, Colors.purple],
               begin: Alignment.topLeft,
@@ -42,11 +42,11 @@ class _QuickAddPageState extends State<QuickAddPage> {
         child: Column(
           children: [
             ListTile(
-              leading: Icon(Icons.restaurant, color: Colors.blue),
-              title: Text('Meal', style: TextStyle(fontWeight: FontWeight.bold)),
+              leading: const Icon(Icons.restaurant, color: Colors.blue),
+              title: const Text('Meal', style: TextStyle(fontWeight: FontWeight.bold)),
               trailing: Text(widget.mealType),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: _caloriesController,
               decoration: InputDecoration(
@@ -58,24 +58,24 @@ class _QuickAddPageState extends State<QuickAddPage> {
               ),
               keyboardType: TextInputType.number,
             ),
-            SizedBox(height: 16),
-            Divider(),
+            const SizedBox(height: 16),
+            const Divider(),
             _buildPremiumFeature('Total Fat (g)'),
             _buildPremiumFeature('Total Carbohydrates (g)'),
             _buildPremiumFeature('Protein (g)'),
             _buildPremiumFeature('Time'),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 // Handle Go Premium
               },
-              child: Text('Go Premium'),
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white, backgroundColor: Colors.blue,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
+              child: Text('Go Premium'),
             ),
           ],
         ),
@@ -86,7 +86,7 @@ class _QuickAddPageState extends State<QuickAddPage> {
   Widget _buildPremiumFeature(String label) {
     return ListTile(
       title: Text(label),
-      trailing: Icon(Icons.lock, color: Colors.yellow),
+      trailing: const Icon(Icons.lock, color: Colors.yellow),
     );
   }
 

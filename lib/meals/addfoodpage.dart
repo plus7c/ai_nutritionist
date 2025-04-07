@@ -4,21 +4,21 @@ import 'quickaddpage.dart';
 class AddFoodPage extends StatelessWidget {
   final String mealType;
 
-  AddFoodPage({required this.mealType});
+  const AddFoodPage({super.key, required this.mealType});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(mealType, style: TextStyle(color: Colors.white)),
+        title: Text(mealType, style: const TextStyle(color: Colors.white)),
         actions: [
           IconButton(
-            icon: Icon(Icons.check, color: Colors.white),
+            icon: const Icon(Icons.check, color: Colors.white),
             onPressed: () {},
           ),
         ],
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.blue, Colors.purple],
               begin: Alignment.topLeft,
@@ -34,13 +34,13 @@ class AddFoodPage extends StatelessWidget {
             TextField(
               decoration: InputDecoration(
                 labelText: 'Search for a food',
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -50,7 +50,7 @@ class AddFoodPage extends StatelessWidget {
                     context, Icons.add_circle_outline, 'Quick Add'),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Expanded(
               child: ListView(
                 children: [
@@ -78,7 +78,7 @@ class AddFoodPage extends StatelessWidget {
               BoxShadow(
                 color: Colors.black.withOpacity(0.2),
                 blurRadius: 4,
-                offset: Offset(0, 2),
+                offset: const Offset(0, 2),
               ),
             ],
           ),
@@ -93,7 +93,7 @@ class AddFoodPage extends StatelessWidget {
             },
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Text(label, textAlign: TextAlign.center),
       ],
     );
@@ -101,15 +101,15 @@ class AddFoodPage extends StatelessWidget {
 
   Widget _buildFoodItem(String food, String details) {
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
       child: ListTile(
-        title: Text(food, style: TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(details, style: TextStyle(color: Colors.grey)),
-        trailing: Icon(Icons.add, color: Colors.blue),
+        title: Text(food, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text(details, style: const TextStyle(color: Colors.grey)),
+        trailing: const Icon(Icons.add, color: Colors.blue),
         onTap: () {
           // Handle food item selection
         },

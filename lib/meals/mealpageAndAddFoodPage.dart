@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../gemini_utils.dart';
 import '../stats/dateselect.dart';
 import 'LoggedMeal.dart';
 import 'addmeallogpagewidget.dart';
 
 class MealPage2 extends StatefulWidget {
+  const MealPage2({super.key});
+
   @override
   State<MealPage2> createState() => _MealPage2State();
 }
@@ -81,7 +84,7 @@ class _MealPage2State extends State<MealPage2> {
           .doc(userId)
           .collection('loggedmeals')
           .where('timeOfLogging', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
-          .where('timeOfLogging', isLessThanOrEqualTo: Timestamp.fromDate(startOfDay.add(Duration(days: 1))))
+          .where('timeOfLogging', isLessThanOrEqualTo: Timestamp.fromDate(startOfDay.add(const Duration(days: 1))))
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
@@ -108,7 +111,7 @@ class _MealPage2State extends State<MealPage2> {
     } catch (e) {
       print('Error deleting meal item: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to delete meal item. Please try again.')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.failedToDeleteMealItem)),
       );
       return false;
     }
@@ -119,24 +122,24 @@ class _MealPage2State extends State<MealPage2> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Delete Meal Item'),
+          title: Text(AppLocalizations.of(context)!.deleteMealItemTitle),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Are you sure you want to delete this meal item?'),
-                Text(mealItem.mealItemName, style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(AppLocalizations.of(context)!.deleteMealItemConfirmation),
+                Text(mealItem.mealItemName, style: const TextStyle(fontWeight: FontWeight.bold)),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: Text(AppLocalizations.of(context)!.cancelButton),
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
             ),
             TextButton(
-              child: Text('Delete'),
+              child: Text(AppLocalizations.of(context)!.deleteButton),
               onPressed: () {
                 Navigator.of(context).pop(true);
                 _deleteMealItem(mealType, mealItem);
@@ -153,14 +156,14 @@ class _MealPage2State extends State<MealPage2> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Calories Remaining',
-          style: TextStyle(
+          AppLocalizations.of(context)!.caloriesRemainingPageTitle,
+          style: const TextStyle(
             fontSize: 22.0,
             fontWeight: FontWeight.bold,
             fontFamily: 'Roboto',
           ),
         ),
-        leading: Icon(Icons.heat_pump_sharp),
+        leading: const Icon(Icons.heat_pump_sharp),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -168,14 +171,14 @@ class _MealPage2State extends State<MealPage2> {
             _buildDateTimePicker(context),
             _buildCaloriesRemaining(),
             Card(
-              margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               elevation: 4,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
               child: ListTile(
-                leading: Icon(Icons.add, color: Colors.green),
-                title: Text('LOG FOOD', style: TextStyle(color: Colors.green)),
+                leading: const Icon(Icons.add, color: Colors.green),
+                title: Text(AppLocalizations.of(context)!.logFoodButton, style: const TextStyle(color: Colors.green)),
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -187,12 +190,18 @@ class _MealPage2State extends State<MealPage2> {
                 ),
               ),
             ),
-            ListTile(leading: Icon(Icons.warning_amber_outlined, color: Colors.red), title: Text('To delete log entry swipe left', style: TextStyle(fontStyle: FontStyle.italic),),),
+            ListTile(
+              leading: const Icon(Icons.warning_amber_outlined, color: Colors.red), 
+              title: Text(
+                AppLocalizations.of(context)!.deleteEntrySwipeHint, 
+                style: const TextStyle(fontStyle: FontStyle.italic),
+              ),
+            ),
             FutureBuilder<LoggedMeal?>(
               future: _fetchLoggedMeal(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
+                  return const CircularProgressIndicator();
                 } else if (snapshot.hasData) {
                   LoggedMeal loggedMeal = snapshot.data!;
                   return Column(
@@ -217,8 +226,8 @@ class _MealPage2State extends State<MealPage2> {
       child: Column(
         children: [
           Text(
-            'No meals logged for this date.',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            AppLocalizations.of(context)!.noMealsLoggedMessage,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -240,10 +249,10 @@ class _MealPage2State extends State<MealPage2> {
 
   Widget _buildCaloriesRemaining() {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -251,27 +260,31 @@ class _MealPage2State extends State<MealPage2> {
                 future: _fetchLoggedMeal(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
+                    return const CircularProgressIndicator();
                   } else if (snapshot.hasData) {
                     LoggedMeal loggedMeal = snapshot.data!;
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                            child: Text('Total Calories: ${loggedMeal.totalCaloriesLoggedMeal} kCal', style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),)
+                            child: Text(
+                              AppLocalizations.of(context)!.totalCaloriesText(loggedMeal.totalCaloriesLoggedMeal.toString()), 
+                              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+                            )
                         ),
                       ],
                     );
                   } else {
-                    return Text('Total Calories: 0 kCal', style: TextStyle(
-                        fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black));
+                    return Text(
+                      AppLocalizations.of(context)!.totalCaloriesText("0"), 
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black)
+                    );
                   }
                 },
               ),
             ],
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
         ],
       ),
     );
@@ -279,11 +292,11 @@ class _MealPage2State extends State<MealPage2> {
 
   Widget _buildMealSection(BuildContext context, MealType mealType) {
     if (mealType.mealItems.isEmpty) {
-      return SizedBox.shrink(); // Return an empty widget if there are no meal items
+      return const SizedBox.shrink(); // Return an empty widget if there are no meal items
     }
 
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
@@ -292,19 +305,21 @@ class _MealPage2State extends State<MealPage2> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ListTile(
-            leading: Icon(Icons.restaurant, color: Colors.blue),
+            leading: const Icon(Icons.restaurant, color: Colors.blue),
             title: Text(mealType.mealTypeName,
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            trailing: Text('${mealType.totalCalories} kCal',
-                style: TextStyle(color: Colors.blue)),
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+            trailing: Text(
+              AppLocalizations.of(context)!.caloriesUnitText(mealType.totalCalories),
+              style: const TextStyle(color: Colors.blue)
+            ),
           ),
           ...mealType.mealItems.map((food) => Dismissible(
             key: Key(food.id),
             background: Container(
               color: Colors.red,
               alignment: Alignment.centerRight,
-              padding: EdgeInsets.only(right: 20),
-              child: Icon(Icons.delete, color: Colors.white),
+              padding: const EdgeInsets.only(right: 20),
+              child: const Icon(Icons.delete, color: Colors.white),
             ),
             direction: DismissDirection.endToStart,
             confirmDismiss: (direction) async {
@@ -317,8 +332,10 @@ class _MealPage2State extends State<MealPage2> {
             },
             child: ListTile(
               title: Text(food.mealItemName),
-              trailing: Text('${food.calories} kCal',
-                  style: TextStyle(color: Colors.grey)),
+              trailing: Text(
+                AppLocalizations.of(context)!.caloriesUnitText(food.calories),
+                style: const TextStyle(color: Colors.grey)
+              ),
             ),
           )),
         ],

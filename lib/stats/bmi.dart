@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../firebase_gemini_helper/firebase_gemini_helper.dart';
-import '../gemini_engine/gemini_stats_section.dart';
+import '../firebase_gemini_helper/firebase_gemini_helper.dart' as firebase_helper;
 
 class BMICard extends StatefulWidget {
   final double bmi;
 
-  const BMICard({required this.bmi});
+  const BMICard({super.key, required this.bmi});
 
   @override
   State<BMICard> createState() => _BMICardState();
@@ -29,13 +29,13 @@ class _BMICardState extends State<BMICard> {
 
   String _getBMICategory(double bmi) {
     if (bmi < 18.5) {
-      return 'Underweight';
+      return AppLocalizations.of(context)!.underweightText;
     } else if (bmi >= 18.5 && bmi <= 24.9) {
-      return 'Healthy Weight';
+      return AppLocalizations.of(context)!.normalWeightText;
     } else if (bmi >= 25 && bmi <= 29.9) {
-      return 'Overweight';
+      return AppLocalizations.of(context)!.overweightText;
     } else {
-      return 'Obese';
+      return AppLocalizations.of(context)!.obeseText;
     }
   }
 
@@ -44,16 +44,16 @@ class _BMICardState extends State<BMICard> {
       _isLoading = true;
     });
 
-    // Call to Gemini to get the recommendation
-    String recommendation = await getBMIRecommendation();
+    // 调用Firebase中的BMI推荐函数（它内部会调用tongyi.getBMIRecommendation）
+    String recommendation = await firebase_helper.getBMIRecommendation();
 
     setState(() {
       _recommendation = recommendation;
       _isLoading = false;
     });
-}
+  }
 
-    Color _getBMICategoryColor(double bmi) {
+  Color _getBMICategoryColor(double bmi) {
     if (bmi < 18.5) {
       return Colors.blue;
     } else if (bmi >= 18.5 && bmi <= 24.9) {
@@ -81,48 +81,48 @@ class _BMICardState extends State<BMICard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Body Mass Index (BMI)',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
+              AppLocalizations.of(context)!.bmiTitle,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Your BMI: ${widget.bmi.toStringAsFixed(1)}',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  AppLocalizations.of(context)!.bmiValue(widget.bmi.toStringAsFixed(1)),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     color: bmiCategoryColor,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     bmiCategory,
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _isLoading
-                ? Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Gemini Recommendation',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.geminiRecommendation,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.blue,
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Text(
                   _recommendation,
-                  style: TextStyle(fontSize: 14, color: Colors.black),
+                  style: const TextStyle(fontSize: 14, color: Colors.black),
                 ),
               ],
             ),

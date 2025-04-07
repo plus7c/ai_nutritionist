@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_core/firebase_core.dart';
+import '../firebase_options.dart';
 
 import '../apptemplate/apptemplate.dart';
 
 class UserStatsOnboarding extends StatefulWidget {
-  const UserStatsOnboarding({Key? key}) : super(key: key);
+  const UserStatsOnboarding({super.key});
 
   @override
   State<UserStatsOnboarding> createState() => _UserStatsOnboardingState();
@@ -23,8 +25,8 @@ class _UserStatsOnboardingState extends State<UserStatsOnboarding> {
   double _weight = 0;
   int _heightFeet = 0;
   int _heightInches = 0;
-  List<String> _selectedGoals = [];
-  List<String> _selectedAllergies = [];
+  final List<String> _selectedGoals = [];
+  final List<String> _selectedAllergies = [];
   String _customAllergy = '';
 
   List<String> genders = ['Male', 'Female', 'Other'];
@@ -88,32 +90,73 @@ class _UserStatsOnboardingState extends State<UserStatsOnboarding> {
       print('Weight: $_weight');
       print('Height: $_heightFeet feet $_heightInches inches');
 
-      User? user = _auth.currentUser;
-      if (user != null) {
-        try {
-          await _firestore.collection('users').doc(user.uid).set({
-            'username': _username,
-            'gender': _gender,
-            'dateOfBirth': _dateOfBirth,
-            'weight': _weight,
-            'height': {
-              'feet': _heightFeet,
-              'inches': _heightInches,
-            },
-            'goals': _selectedGoals,
-            'allergies': _selectedAllergies,
-          });
-          print('User data saved successfully');
+      // 检查网络连接
+      try {
+        User? user = _auth.currentUser;
+        if (user != null) {
+          try {
+            print('尝试保存用户数据到 Firestore，用户ID: ${user.uid}');
+            
+            // 准备数据，确保格式正确
+            Map<String, dynamic> userData = {
+              'username': _username,
+              'gender': _gender,
+              'dateOfBirth': _dateOfBirth != null ? Timestamp.fromDate(_dateOfBirth!) : null,
+              'weight': _weight,
+              'height': {
+                'feet': _heightFeet,
+                'inches': _heightInches,
+              },
+              'goals': _selectedGoals,
+              'allergies': _selectedAllergies,
+              'createdAt': FieldValue.serverTimestamp(), // 添加创建时间戳
+            };
+            
+            print('保存的数据: $userData');
+            
+            // 确保 Firebase 已初始化
+            if (!Firebase.apps.isNotEmpty) {
+              await Firebase.initializeApp(
+                options: DefaultFirebaseOptions.currentPlatform,
+              );
+            }
+            
+            // 使用事务确保写入成功
+            await FirebaseFirestore.instance.runTransaction((transaction) async {
+              transaction.set(
+                FirebaseFirestore.instance.collection('users').doc(user.uid),
+                userData
+              );
+            });
+            
+            print('用户数据保存成功');
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('User data saved successfully!')),
+            );
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AppTemplate()));
+          } catch (e) {
+            print('Error saving user data: $e');
+            // 添加更详细的错误日志
+            if (e is FirebaseException) {
+              print('Firebase Error Code: ${e.code}');
+              print('Firebase Error Message: ${e.message}');
+              print('Firebase Error Stack: ${e.stackTrace}');
+            }
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Error saving user data: ${e.toString()}')),
+            );
+          }
+        } else {
+          print('No user is signed in');
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('User data saved successfully!')),
-          );
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AppTemplate()));
-        } catch (e) {
-          print('Error saving user data: $e');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error saving user data. Please try again.')),
+            const SnackBar(content: Text('No user is signed in. Please sign in first.')),
           );
         }
+      } catch (e) {
+        print('General error: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('An unexpected error occurred: ${e.toString()}')),
+        );
       }
     } else {
       print('Form validation failed');
@@ -146,7 +189,7 @@ class _UserStatsOnboardingState extends State<UserStatsOnboarding> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return Scaffold(
+      return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),
         ),
@@ -155,7 +198,7 @@ class _UserStatsOnboardingState extends State<UserStatsOnboarding> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('User Profile'),
+        title: const Text('User Profile'),
         elevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.black,
@@ -163,15 +206,15 @@ class _UserStatsOnboardingState extends State<UserStatsOnboarding> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           children: [
-            Text(
+            const Text(
               'Let\'s get to know you!',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextFormField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Username',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.person),
@@ -180,10 +223,10 @@ class _UserStatsOnboardingState extends State<UserStatsOnboarding> {
               onSaved: (value) => _username = value!,
               onChanged: (value) => _username = value,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               value: _gender,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Gender',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.people),
@@ -197,12 +240,12 @@ class _UserStatsOnboardingState extends State<UserStatsOnboarding> {
                 });
               },
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             GestureDetector(
               onTap: () => _selectDate(context),
               child: AbsorbPointer(
                 child: TextFormField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Date of Birth',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.cake),
@@ -214,9 +257,9 @@ class _UserStatsOnboardingState extends State<UserStatsOnboarding> {
                 ),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextFormField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Weight (lbs)',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.fitness_center),
@@ -234,12 +277,12 @@ class _UserStatsOnboardingState extends State<UserStatsOnboarding> {
               onSaved: (value) => _weight = double.parse(value!),
               onChanged: (value) => _weight = double.tryParse(value) ?? 0,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
                   child: TextFormField(
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Height (feet)',
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.height),
@@ -258,10 +301,10 @@ class _UserStatsOnboardingState extends State<UserStatsOnboarding> {
                     onChanged: (value) => _heightFeet = int.tryParse(value) ?? 0,
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: TextFormField(
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Height (inches)',
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.height),
@@ -286,8 +329,8 @@ class _UserStatsOnboardingState extends State<UserStatsOnboarding> {
                 ),
               ],
             ),
-            SizedBox(height: 16),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               'Select your goals:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
@@ -303,9 +346,9 @@ class _UserStatsOnboardingState extends State<UserStatsOnboarding> {
                   }
                 });
               },
-            )).toList(),
-            SizedBox(height: 16),
-            Text(
+            )),
+            const SizedBox(height: 16),
+            const Text(
               'Select your allergies:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
@@ -321,28 +364,28 @@ class _UserStatsOnboardingState extends State<UserStatsOnboarding> {
                   }
                 });
               },
-            )).toList(),
-            SizedBox(height: 16),
+            )),
+            const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
                   child: TextFormField(
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Add custom allergy',
                       border: OutlineInputBorder(),
                     ),
                     onChanged: (value) => _customAllergy = value,
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 ElevatedButton(
                   onPressed: _addCustomAllergy,
-                  child: Text('Add'),
+                  child: const Text('Add'),
                 ),
               ],
             ),
-            SizedBox(height: 16),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               'Selected Allergies:',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
@@ -357,18 +400,18 @@ class _UserStatsOnboardingState extends State<UserStatsOnboarding> {
                 },
               )).toList(),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             ElevatedButton(
               onPressed: _saveUserData,
-              child: Text('Save Profile'),
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white,
                 backgroundColor: Colors.green,
-                padding: EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(10.0),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8), // Slightly rounded corners
                 ),
-              )
+              ),
+              child: Text('Save Profile')
             ),
           ],
         ),

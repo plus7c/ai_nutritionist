@@ -8,7 +8,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 class FoodLogWidget extends StatefulWidget {
   final GenerativeModel model;
 
-  const FoodLogWidget({Key? key, required this.model}) : super(key: key);
+  const FoodLogWidget({super.key, required this.model});
 
   @override
   _FoodLogWidgetState createState() => _FoodLogWidgetState();
@@ -44,7 +44,7 @@ class _FoodLogWidgetState extends State<FoodLogWidget> {
   }
 
   Future<NutritionInfo> _generateNutritionInfo(Uint8List imageBytes) async {
-    final prompt = '''
+    const prompt = '''
   Analyze this food image and provide the following information:
   1. Name of the dish
   2. Estimated calorie content
@@ -94,30 +94,30 @@ class _FoodLogWidgetState extends State<FoodLogWidget> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Click a Food Photo for Nutrition Info'),
+        title: const Text('Click a Food Photo for Nutrition Info'),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : entries.isEmpty
-          ? Center(child: Text('No entries yet. Add a food photo to get started!'))
+          ? const Center(child: Text('No entries yet. Add a food photo to get started!'))
           : ListView.builder(
         itemCount: entries.length,
         itemBuilder: (context, index) {
           final entry = entries[index];
           return Card(
-            margin: EdgeInsets.all(8),
+            margin: const EdgeInsets.all(8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Image.memory(entry.image),
                 Padding(
-                  padding: EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         entry.nutritionInfo.name,
-                        style: Theme.of(context).textTheme.headline6,
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
                       Text('Calories: ${entry.nutritionInfo.calories}'),
                       Text('Protein: ${entry.nutritionInfo.protein}g'),
@@ -137,12 +137,12 @@ class _FoodLogWidgetState extends State<FoodLogWidget> {
         animatedIcon: AnimatedIcons.add_event,
         children: [
           SpeedDialChild(
-            child: Icon(Icons.camera_alt),
+            child: const Icon(Icons.camera_alt),
             label: 'Camera',
             onTap: () => _getImage(ImageSource.camera),
           ),
           SpeedDialChild(
-            child: Icon(Icons.photo),
+            child: const Icon(Icons.photo),
             label: 'Gallery',
             onTap: () => _getImage(ImageSource.gallery),
           ),
